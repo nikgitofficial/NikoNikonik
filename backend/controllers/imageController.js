@@ -10,7 +10,7 @@ export const uploadImage = async (req, res) => {
     const streamUpload = (fileBuffer) => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-          { resource_type: "image", folder: "user_images_authv2" },
+          { resource_type: "image", folder: "user_images_nikonikonik" },
           (error, result) => {
             if (result) resolve(result);
             else reject(error);

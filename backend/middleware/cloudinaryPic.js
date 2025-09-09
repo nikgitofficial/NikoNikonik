@@ -5,7 +5,7 @@ import cloudinary from '../config/cloudinaryPic.js';
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'profile-pics_authv2',
+    folder: 'profile-pics_nikonikonik',
     allowed_formats: ['jpg', 'png', 'jpeg'],
     transformation: [{ width: 500, height: 500, crop: 'limit' }],
   },
