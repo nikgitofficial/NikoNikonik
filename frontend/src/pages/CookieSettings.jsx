@@ -11,6 +11,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import FadeUpOnScroll from "../components/FadeUpOnScroll"; // ✅ Added
 
 const CookieSettings = () => {
   const [cookies, setCookies] = useState({
@@ -38,47 +39,71 @@ const CookieSettings = () => {
   return (
     <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
       <Container maxWidth="sm">
-        <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
-          Cookie Settings
-        </Typography>
-        <Typography variant="h6" align="center" color="text.secondary" paragraph>
-          Customize your cookie preferences for a better experience.
-        </Typography>
+        {/* Header */}
+        <FadeUpOnScroll>
+          <Typography
+            variant="h3"
+            align="center"
+            gutterBottom
+            sx={{ fontWeight: "bold" }}
+          >
+            Cookie Settings
+          </Typography>
+        </FadeUpOnScroll>
 
-        <Divider sx={{ my: 4 }} />
+        <FadeUpOnScroll>
+          <Typography
+            variant="h6"
+            align="center"
+            color="text.secondary"
+            paragraph
+          >
+            Customize your cookie preferences for a better experience.
+          </Typography>
+        </FadeUpOnScroll>
 
-        <FormGroup>
-          <FormControlLabel
-            control={<Switch checked={cookies.necessary} disabled />}
-            label="Necessary Cookies (Always Active)"
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={cookies.analytics}
-                onChange={handleChange}
-                name="analytics"
-              />
-            }
-            label="Analytics Cookies"
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={cookies.marketing}
-                onChange={handleChange}
-                name="marketing"
-              />
-            }
-            label="Marketing Cookies"
-          />
-        </FormGroup>
+        <FadeUpOnScroll>
+          <Divider sx={{ my: 4 }} />
+        </FadeUpOnScroll>
 
-        <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Button variant="contained" color="primary" onClick={handleSave}>
-            Save Preferences
-          </Button>
-        </Box>
+        {/* Cookie Toggles */}
+        <FadeUpOnScroll>
+          <FormGroup>
+            <FormControlLabel
+              control={<Switch checked={cookies.necessary} disabled />}
+              label="Necessary Cookies (Always Active)"
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={cookies.analytics}
+                  onChange={handleChange}
+                  name="analytics"
+                />
+              }
+              label="Analytics Cookies"
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={cookies.marketing}
+                  onChange={handleChange}
+                  name="marketing"
+                />
+              }
+              label="Marketing Cookies"
+            />
+          </FormGroup>
+        </FadeUpOnScroll>
+
+        {/* Save Button */}
+        <FadeUpOnScroll>
+          <Box sx={{ textAlign: "center", mt: 4 }}>
+            <Button variant="contained" color="primary" onClick={handleSave}>
+              Save Preferences
+            </Button>
+          </Box>
+        </FadeUpOnScroll>
 
         {/* Snackbar Notification */}
         <Snackbar

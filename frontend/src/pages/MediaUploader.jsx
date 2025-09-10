@@ -1,14 +1,57 @@
+// src/pages/MediaUploader.jsx
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Divider,
+  CircularProgress,
+  Tooltip,
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+} from "@mui/material";
 
 const MediaUploader = () => {
+  const [fileStatus, setFileStatus] = useState({});
   const navigate = useNavigate();
   const [mediaList, setMediaList] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [actionLoading, setActionLoading] = useState(null);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    action: null,
+    mediaId: null,
+  });
+
+  // ✅ Edit modal
+  const [editDialog, setEditDialog] = useState({
+    open: false,
+    mediaId: null,
+    title: "",
+  });
+
+  // ✅ Drag-and-drop
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef(null);
+
+  // ✅ Cancel controllers
+  const [controllers, setControllers] = useState([]);
 
   const fetchMedia = async () => {
     try {
@@ -16,6 +59,11 @@ const MediaUploader = () => {
       setMediaList(res.data);
     } catch (err) {
       console.error("Failed to fetch media:", err);
+      setSnackbar({
+        open: true,
+        message: "Failed to fetch media.",
+        severity: "error",
+      });
     }
   };
 
@@ -61,32 +109,107 @@ const MediaUploader = () => {
 
     try {
       setLoading(true);
+      const newControllers = [];
 
       for (const file of selectedFiles) {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("title", file.name);
 
+        // 🔄 init progress state for this file
+        setFileStatus((prev) => ({
+          ...prev,
+          [file.name]: { progress: 0, done: false },
+        }));
+
+        const controller = new AbortController();
+        newControllers.push(controller);
+
         await api.post("/media/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
+          signal: controller.signal,
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+
+            setFileStatus((prev) => ({
+              ...prev,
+              [file.name]: { progress: percent, done: false },
+            }));
+          },
         });
+
+        // ✅ mark file as done
+        setFileStatus((prev) => ({
+          ...prev,
+          [file.name]: { progress: 100, done: true },
+        }));
       }
 
+      setControllers(newControllers);
       setSelectedFiles([]);
       fetchMedia();
+      setSnackbar({
+        open: true,
+        message: "Media uploaded successfully!",
+        severity: "success",
+      });
     } catch (err) {
-      console.error("Upload failed:", err);
+      if (err.name === "CanceledError") {
+        setSnackbar({
+          open: true,
+          message: "Upload canceled.",
+          severity: "warning",
+        });
+      } else {
+        console.error("Upload failed:", err);
+        setSnackbar({
+          open: true,
+          message: "Upload failed.",
+          severity: "error",
+        });
+      }
     } finally {
       setLoading(false);
+      setControllers([]);
     }
+  };
+
+  // ✅ Cancel All Uploads
+  const handleCancelAll = () => {
+    controllers.forEach((c) => c.abort());
+    setControllers([]);
+    setLoading(false);
+    setSelectedFiles([]);
+    setFileStatus({});
+    setSnackbar({
+      open: true,
+      message: "All uploads canceled.",
+      severity: "info",
+    });
   };
 
   const handleDelete = async (id) => {
     try {
+      setActionLoading(id); // ✅ disable & show spinner
       await api.delete(`/media/${id}`);
       fetchMedia();
+      setSnackbar({
+        open: true,
+        message: "Media deleted successfully!",
+        severity: "success",
+      });
     } catch (err) {
       console.error("Delete failed:", err);
+      setSnackbar({
+        open: true,
+        message: "Delete failed.",
+        severity: "error",
+      });
+    } finally {
+      setActionLoading(null);
+      setConfirmDialog({ open: false, action: null, mediaId: null });
     }
   };
 
@@ -94,108 +217,409 @@ const MediaUploader = () => {
     try {
       const res = await api.get(`/media/download/${id}`);
       window.open(res.data.url, "_blank");
+      setSnackbar({
+        open: true,
+        message: "Download started.",
+        severity: "info",
+      });
     } catch (err) {
       console.error("Download failed:", err);
+      setSnackbar({
+        open: true,
+        message: "Download failed.",
+        severity: "error",
+      });
     }
   };
 
-  const handleEdit = async (id) => {
-    const newTitle = prompt("Enter new title:");
-    if (!newTitle) return;
+  // ✅ Open Edit Modal
+  const handleEdit = (id, currentTitle) => {
+    setEditDialog({ open: true, mediaId: id, title: currentTitle });
+  };
 
+  // ✅ Save Edit
+  const handleSaveEdit = async () => {
     try {
-      await api.put(`/media/${id}`, { title: newTitle });
+      setActionLoading(editDialog.mediaId);
+      await api.put(`/media/${editDialog.mediaId}`, {
+        title: editDialog.title,
+      });
       fetchMedia();
+      setSnackbar({
+        open: true,
+        message: "Media updated successfully!",
+        severity: "success",
+      });
+      setEditDialog({ open: false, mediaId: null, title: "" });
     } catch (err) {
       console.error("Edit failed:", err);
+      setSnackbar({
+        open: true,
+        message: "Edit failed.",
+        severity: "error",
+      });
+    } finally {
+      setActionLoading(null);
     }
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "20px auto" }}>
-       {/* ✅ Back Link */}
-      <p
-        onClick={() => navigate(-1)} // navigate back
-        style={{
-          color: "#0275d8",
+    <Box
+      sx={{
+        p: { xs: 1.5, sm: 3 },
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        width: "100%",
+      }}
+    >
+      {/* ✅ Back Link */}
+      <Typography
+        onClick={() => navigate(-1)}
+        sx={{
+          color: "primary.main",
           cursor: "pointer",
           textDecoration: "underline",
-          marginBottom: "20px",
+          mb: { xs: 1.5, sm: 2 },
+          alignSelf: "flex-start",
+          fontSize: { xs: "0.9rem", sm: "1rem" },
         }}
       >
         ← Back
-      </p>
-      <h2>Upload Images & Videos</h2>
-      <form onSubmit={handleUpload}>
-        {/* Hidden file input */}
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*,video/*"
-          multiple
-          style={{ display: "none" }}
-          onChange={handleFileChange}
-        />
+      </Typography>
 
-        {/* Drag and Drop Zone */}
-        <div
-          onClick={() => inputRef.current.click()}
-          onDrop={handleDrop}
-          onDragEnter={handleDragEnter}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          style={{
-            marginTop: "15px",
-            padding: "20px",
-            border: dragActive ? "3px dashed #0275d8" : "2px dashed #999",
-            borderRadius: "10px",
-            textAlign: "center",
-            background: dragActive ? "#f0f8ff" : "#fafafa",
-            cursor: "pointer",
-          }}
-        >
-          {dragActive
-            ? "Release to drop files here"
-            : "Click or drag & drop files here"}
-        </div>
+      {/* Page Title */}
+      <Typography
+        variant="h4"
+        fontWeight="bold"
+        textAlign="center"
+        mb={{ xs: 2, sm: 3 }}
+        fontSize={{ xs: "1.5rem", sm: "2rem" }}
+      >
+        Upload Images & Videos
+      </Typography>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ marginTop: "10px", padding: "10px 15px" }}
-        >
-          {loading ? "Uploading..." : "Upload"}
-        </button>
-      </form>
+      {/* Upload Form */}
+      <Paper
+        sx={{
+          p: { xs: 2, sm: 3 },
+          borderRadius: 2,
+          width: "100%",
+          maxWidth: "600px",
+          textAlign: "center",
+        }}
+      >
+        <form onSubmit={handleUpload}>
+          {/* Hidden Input */}
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*,video/*"
+            multiple
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
 
-      {selectedFiles.length > 0 && (
-        <div style={{ marginTop: "10px" }}>
-          <strong>Selected Files:</strong>
-          <ul>
-            {selectedFiles.map((file, i) => (
-              <li key={i}>{file.name}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+          {/* Drag & Drop Zone */}
+          <Box
+            onClick={() => inputRef.current.click()}
+            onDrop={handleDrop}
+            onDragEnter={handleDragEnter}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            sx={{
+              p: 3,
+              border: dragActive
+                ? "3px dashed primary.main"
+                : "2px dashed grey.500",
+              borderRadius: 2,
+              bgcolor: dragActive ? "primary.50" : "grey.100",
+              cursor: "pointer",
+              transition: "0.2s",
+              "&:hover": { bgcolor: "grey.200" },
+            }}
+          >
+            <Typography>
+              {dragActive
+                ? "Release to drop files here"
+                : "Click or drag & drop files here"}
+            </Typography>
+          </Box>
 
-      <h3>Your Media</h3>
-      {mediaList.map((item) => (
-        <div key={item._id} style={{ marginBottom: "20px" }}>
-          <p>
-            <strong>{item.title}</strong>
-          </p>
-          {item.type === "image" ? (
-            <img src={item.url} alt={item.title} width="100%" />
-          ) : (
-            <video src={item.url} controls width="100%" />
-          )}
-          <button onClick={() => handleEdit(item._id)}>Edit</button>
-          <button onClick={() => handleDelete(item._id)}>Delete</button>
-          <button onClick={() => handleDownload(item._id)}>Download</button>
-        </div>
-      ))}
-    </div>
+          {/* Upload & Cancel Buttons */}
+          <Box mt={2} display="flex" justifyContent="center" gap={2}>
+            <Tooltip title="Upload selected files">
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={loading}
+                sx={{ minWidth: "120px" }}
+              >
+                {loading ? (
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <CircularProgress size={20} color="inherit" />
+                    {uploadProgress > 0 && `${uploadProgress}%`}
+                  </Box>
+                ) : (
+                  "Upload"
+                )}
+              </Button>
+            </Tooltip>
+
+            {loading && (
+              <Tooltip title="Cancel all uploads">
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={handleCancelAll}
+                >
+                  Cancel All
+                </Button>
+              </Tooltip>
+            )}
+          </Box>
+        </form>
+
+        {/* Selected Files */}
+        {selectedFiles.length > 0 && (
+          <Box mt={2} textAlign="left">
+            <Typography fontWeight="bold">Selected Files:</Typography>
+            <ul
+              style={{
+                paddingLeft: "20px",
+                fontSize: "0.9rem",
+                listStyle: "none",
+              }}
+            >
+              {selectedFiles.map((file, i) => {
+                const status = fileStatus[file.name] || {
+                  progress: 0,
+                  done: false,
+                };
+
+                return (
+                  <li
+                    key={i}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      marginBottom: "6px",
+                    }}
+                  >
+                    <Typography>{file.name}</Typography>
+
+                    {status.done ? (
+                      <CheckCircleIcon color="success" fontSize="small" />
+                    ) : status.progress > 0 ? (
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <CircularProgress
+                          size={18}
+                          color="primary"
+                          variant="determinate"
+                          value={status.progress}
+                        />
+                        <Typography variant="caption">
+                          {status.progress}%
+                        </Typography>
+                      </Box>
+                    ) : null}
+                  </li>
+                );
+              })}
+            </ul>
+          </Box>
+        )}
+      </Paper>
+
+      {/* Media List */}
+      <Box mt={4} width="100%" maxWidth="800px">
+        <Typography variant="h5" mb={2}>
+          Your Media
+        </Typography>
+        <Divider sx={{ mb: 2 }} />
+
+        {mediaList.map((item) => (
+          <Paper key={item._id} sx={{ p: 2, mb: 2, borderRadius: 2 }} elevation={2}>
+            <Typography fontWeight="bold">{item.title}</Typography>
+            {item.type === "image" ? (
+              <img
+                src={item.url}
+                alt={item.title}
+                style={{
+                  width: "100%",
+                  maxHeight: "300px",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                  marginTop: "8px",
+                }}
+              />
+            ) : (
+              <video
+                src={item.url}
+                controls
+                style={{
+                  width: "100%",
+                  maxHeight: "300px",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                  marginTop: "8px",
+                }}
+              />
+            )}
+
+            <Box mt={1} display="flex" gap={1} flexWrap="wrap">
+              <Tooltip title="Edit title">
+                <Button
+                  size="small"
+                  onClick={() => handleEdit(item._id, item.title)}
+                  disabled={actionLoading === item._id}
+                >
+                  Edit
+                </Button>
+              </Tooltip>
+              <Tooltip title="Download file">
+                <Button
+                  size="small"
+                  onClick={() => handleDownload(item._id)}
+                  disabled={actionLoading === item._id}
+                >
+                  Download
+                </Button>
+              </Tooltip>
+              <Tooltip title="Delete file">
+                <span>
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() =>
+                      setConfirmDialog({
+                        open: true,
+                        action: "delete",
+                        mediaId: item._id,
+                      })
+                    }
+                    disabled={actionLoading === item._id}
+                    sx={{
+                      borderRadius: actionLoading === item._id ? "50%" : "4px",
+                      minWidth: actionLoading === item._id ? "40px" : "64px",
+                      width: actionLoading === item._id ? "40px" : "auto",
+                      height: actionLoading === item._id ? "40px" : "auto",
+                      p: actionLoading === item._id ? 0 : "6px 16px",
+                    }}
+                  >
+                    {actionLoading === item._id ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      "Delete"
+                    )}
+                  </Button>
+                </span>
+              </Tooltip>
+            </Box>
+          </Paper>
+        ))}
+
+        {mediaList.length === 0 && (
+          <Typography align="center" color="text.secondary">
+            No media uploaded yet.
+          </Typography>
+        )}
+      </Box>
+
+      {/* Confirm Dialog */}
+      <Dialog
+        open={confirmDialog.open}
+        onClose={() =>
+          setConfirmDialog({ open: false, action: null, mediaId: null })
+        }
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>Confirm {confirmDialog.action}</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to {confirmDialog.action} this file?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() =>
+              setConfirmDialog({ open: false, action: null, mediaId: null })
+            }
+            color="inherit"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => handleDelete(confirmDialog.mediaId)}
+            color="error"
+            variant="contained"
+            disabled={actionLoading === confirmDialog.mediaId}
+          >
+            {actionLoading === confirmDialog.mediaId ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              "Confirm"
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ✅ Edit Dialog */}
+      <Dialog
+        open={editDialog.open}
+        onClose={() => setEditDialog({ open: false, mediaId: null, title: "" })}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>Edit Media Title</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="New Title"
+            value={editDialog.title}
+            onChange={(e) =>
+              setEditDialog({ ...editDialog, title: e.target.value })
+            }
+            autoFocus
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() =>
+              setEditDialog({ open: false, mediaId: null, title: "" })
+            }
+            color="inherit"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSaveEdit}
+            variant="contained"
+            disabled={actionLoading === editDialog.mediaId}
+          >
+            {actionLoading === editDialog.mediaId ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              "Save"
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity={snackbar.severity} sx={{ width: "100%" }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 };
 

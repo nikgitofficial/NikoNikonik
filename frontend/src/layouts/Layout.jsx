@@ -16,15 +16,29 @@ const Layout = () => {
     "/dashboard/media-uploader",
     "/dashboard/image-uploader",
     "/dashboard/settings",
+   
   ];
 
-  // Check if the current route is in the hidden list
+  // ❌ Pages where navbar should be hidden
+  const hiddenNavbarRoutes = [
+    "/dashboard/home",
+    "/dashboard/video-uploader",
+    "/dashboard/media-uploader",
+    "/dashboard/image-uploader",
+    "/dashboard/settings",
+    
+    
+    
+  ];
+
+  // Check if the current route is in the hidden lists
   const shouldHideFooter = hiddenFooterRoutes.includes(location.pathname);
+  const shouldHideNavbar = hiddenNavbarRoutes.includes(location.pathname);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      {/* Navbar */}
-      <Navbar /> {/* ✅ Added Navbar */}
+      {/* Navbar (conditionally rendered) */}
+      {!shouldHideNavbar && <Navbar />} {/* ✅ Navbar hidden on dashboard routes */}
 
       {/* Main Content */}
       <Box sx={{ flex: 1 }}>

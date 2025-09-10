@@ -8,6 +8,7 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
+import FadeUpOnScroll from "../components/FadeUpOnScroll"; // ✅ Import fade
 
 const FAQ = () => {
   const faqs = [
@@ -42,28 +43,35 @@ const FAQ = () => {
     <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
       <Container maxWidth="md">
         {/* Header */}
-        <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
-          Frequently Asked Questions
-        </Typography>
-        <Typography variant="h6" align="center" color="text.secondary" paragraph>
-          Find answers to common questions about using Personal Media Manager.
-        </Typography>
+        <FadeUpOnScroll>
+          <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
+            Frequently Asked Questions
+          </Typography>
+        </FadeUpOnScroll>
+
+        <FadeUpOnScroll>
+          <Typography variant="h6" align="center" color="text.secondary" paragraph>
+            Find answers to common questions about using Personal Media Manager.
+          </Typography>
+        </FadeUpOnScroll>
 
         {/* FAQ List */}
         <Box sx={{ mt: 4 }}>
           {faqs.map((faq, index) => (
-            <Accordion key={index}>
-              <AccordionSummary
-                expandIcon={<ExpandMore />}
-                aria-controls={`panel${index}-content`}
-                id={`panel${index}-header`}
-              >
-                <Typography sx={{ fontWeight: "bold" }}>{faq.question}</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography color="text.secondary">{faq.answer}</Typography>
-              </AccordionDetails>
-            </Accordion>
+            <FadeUpOnScroll key={index}>
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMore />}
+                  aria-controls={`panel${index}-content`}
+                  id={`panel${index}-header`}
+                >
+                  <Typography sx={{ fontWeight: "bold" }}>{faq.question}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography color="text.secondary">{faq.answer}</Typography>
+                </AccordionDetails>
+              </Accordion>
+            </FadeUpOnScroll>
           ))}
         </Box>
       </Container>

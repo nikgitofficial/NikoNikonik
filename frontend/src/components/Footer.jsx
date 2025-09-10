@@ -1,156 +1,165 @@
-import React from 'react';
-import { Box, Grid, Typography, TextField, Button, IconButton, Divider } from '@mui/material';
-import { Facebook, Twitter, LinkedIn, Instagram } from '@mui/icons-material';
+import React, { useState } from "react";
+import { Box, Grid, Typography, TextField, Button, IconButton, Divider, Container, Dialog, DialogTitle, DialogContent, DialogActions, Rating } from "@mui/material";
+import { Facebook, Twitter, LinkedIn, Instagram } from "@mui/icons-material";
+import CssBaseline from "@mui/material/CssBaseline";
+import Link from "@mui/material/Link";
+import { styled } from "@mui/material/styles";
+import Logo from "../assets/logo.png"; // adjust path
 
-// ✅ Import your local logo
-import Logo from '../assets/logo.png'; // adjust the path if Footer.jsx is in another folder
+const Root = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  minHeight: "100vh",
+}));
 
-const Footer = () => {
-  const appPages = ['PublicHome', 'Dashboard', 'Login', 'Register', 'ForgotPassword', 'Profile', 'Settings'];
-  const resourcesPages = ['Docs', 'Guides', 'FAQ', 'Blog', 'Analytics'];
-  const companyPages = ['About', 'Careers', 'Community', 'Contact'];
-  const legalPages = ['Privacy', 'Terms', 'CookieBanner', 'CookieSettings', 'Security', 'Sitemap', 'Status'];
+const Main = styled("main")(({ theme }) => ({
+  marginTop: theme.spacing(8),
+  marginBottom: theme.spacing(2),
+}));
+
+const FooterContainer = styled(Box)(({ theme }) => ({
+  marginTop: "auto",
+  bgcolor: "red",
+  color: "#fff",
+  py: theme.spacing(6),
+  px: theme.spacing(4),
+}));
+
+export default function StickyFooter() {
+  const appPages = ["PublicHome", "Dashboard", "Login", "Register", "ForgotPassword", "Profile", "Settings"];
+  const resourcesPages = ["Docs", "Guides", "FAQ", "Blog", "Analytics"];
+  const companyPages = ["About", "Careers", "Community", "Contact"];
+  const legalPages = ["Privacy", "Terms", "CookieSettings", "Security", "Sitemap", "Status"];
+
+  const [ratingValue, setRatingValue] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
+  const handleRateUs = () => {
+    if (ratingValue === 0) {
+      setModalMessage("Please select a rating first!");
+    } else {
+      setModalMessage(`Thanks for rating us ${ratingValue} star(s)!`);
+      setRatingValue(0);
+    }
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => setModalOpen(false);
 
   return (
-    <Box component="footer" sx={{ bgcolor: '#f9fafb', py: { xs: 6, sm: 10 }, px: { xs: 2, sm: 4, md: 8 } }}>
-      <Grid container spacing={4} maxWidth="xl" mx="auto">
-        {/* Logo & Description */}
-        <Grid item xs={12} sm={6} lg={4}>
-          <Box>
-            <Box
-              component="img"
-              src={Logo} // ✅ Use the local logo
-              alt="Logo"
-              sx={{ height: 40, mb: 2 }}
-            />
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-              nt. Velit officia consequat duis enim velit mollit.
-            </Typography>
-            <Box>
-              <IconButton aria-label="Facebook" color="primary"><Facebook /></IconButton>
-              <IconButton aria-label="Twitter" color="primary"><Twitter /></IconButton>
-              <IconButton aria-label="LinkedIn" color="primary"><LinkedIn /></IconButton>
-              <IconButton aria-label="Instagram" color="primary"><Instagram /></IconButton>
+    <Root>
+      <CssBaseline />
+      <Container component={Main} maxWidth="lg" sx={{ mt: 6 }}>
+        {/* Hero Section */}
+        <Box textAlign="center" mb={6}>
+          <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+            Niko Nikonik
+          </Typography>
+          <Typography variant="h5" component="h2" gutterBottom sx={{ color: 'text.secondary' }}>
+            Your Personal Media Hub
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: 600, mx: 'auto' }}>
+            Niko Nikonik is a secure platform for managing your media. Sign in to upload, organize, and share your videos, images, and other media effortlessly. Access your content anytime, anywhere, with a smooth and intuitive user experience.
+          </Typography>
+        </Box>
+
+        {/* Feature Cards */}
+        <Grid container spacing={4} justifyContent="center">
+          <Grid item xs={12} sm={6} md={4}>
+            <Box sx={{ p: 4, bgcolor: '#f44336', color: '#fff', borderRadius: 3, textAlign: 'center', boxShadow: 3, transition: 'transform 0.3s', '&:hover': { transform: 'translateY(-8px)', boxShadow: 6 } }}>
+              <Typography variant="h6" gutterBottom>Upload Media</Typography>
+              <Typography variant="body2">Upload videos, images, and other media securely with just a few clicks.</Typography>
             </Box>
-          </Box>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Box sx={{ p: 4, bgcolor: '#1976d2', color: '#fff', borderRadius: 3, textAlign: 'center', boxShadow: 3, transition: 'transform 0.3s', '&:hover': { transform: 'translateY(-8px)', boxShadow: 6 } }}>
+              <Typography variant="h6" gutterBottom>Organize Content</Typography>
+              <Typography variant="body2">Manage your files easily with folders, tags, and smart search functionality.</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Box sx={{ p: 4, bgcolor: '#ff9800', color: '#fff', borderRadius: 3, textAlign: 'center', boxShadow: 3, transition: 'transform 0.3s', '&:hover': { transform: 'translateY(-8px)', boxShadow: 6 } }}>
+              <Typography variant="h6" gutterBottom>Share & Access</Typography>
+              <Typography variant="body2">Share your media with friends or keep it private. Access from any device, anytime.</Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
+
+      {/* Footer */}
+      <FooterContainer component="footer">
+        <Grid container spacing={4} maxWidth="xl" mx="auto">
+          {/* Logo & Description */}
+          <Grid item xs={12} sm={6} lg={4}>
+            <Box>
+              <Box component="img" src={Logo} alt="Logo" sx={{ height: 40, mb: 2 }} />
+              <Typography variant="body1" sx={{ mb: 2, color: "#000" }}>Velit officia consequat duis enim velit mollit. Lorem ipsum dolor sit amet.</Typography>
+              <Box>
+                <IconButton aria-label="Facebook" sx={{ color: "#000", "&:hover": { color: "#3b82f6" } }}><Facebook /></IconButton>
+                <IconButton aria-label="Twitter" sx={{ color: "#000", "&:hover": { color: "#3b82f6" } }}><Twitter /></IconButton>
+                <IconButton aria-label="LinkedIn" sx={{ color: "#000", "&:hover": { color: "#3b82f6" } }}><LinkedIn /></IconButton>
+                <IconButton aria-label="Instagram" sx={{ color: "#000", "&:hover": { color: "#3b82f6" } }}><Instagram /></IconButton>
+              </Box>
+            </Box>
+          </Grid>
+
+          {/* Links Columns (App, Resources, Company, Legal) */}
+          {[{title:"App",links:appPages},{title:"Resources",links:resourcesPages},{title:"Company",links:companyPages},{title:"Legal",links:legalPages}].map((col,idx)=>(
+            <Grid key={idx} item xs={6} sm={3} lg={2}>
+              <Typography variant="overline" sx={{ mb: 2, color: "#000" }}>{col.title}</Typography>
+              <Box>{col.links.map((page)=><Typography key={page} component="a" href={`/${page}`} sx={{ display: "block", color: "#000", textDecoration: "none", mb: 1, "&:hover": { color: "#b58900" } }}>{page}</Typography>)}</Box>
+            </Grid>
+          ))}
+
+          {/* Newsletter */}
+          <Grid item xs={12} sm={12} lg={4}>
+            <Typography variant="overline" sx={{ mb: 2, color: "#000" }}>Subscribe to newsletter</Typography>
+            <Box component="form" noValidate autoComplete="off">
+              <TextField
+                fullWidth
+                type="email"
+                label="Enter your email"
+                variant="outlined"
+                size="small"
+                sx={{ mb:2,input:{color:"#000"},label:{color:"#000"},"& .MuiOutlinedInput-root":{"& fieldset":{borderColor:"#000"},"&:hover fieldset":{borderColor:"#b58900"},"&.Mui-focused fieldset":{borderColor:"#b58900"}}}}
+              />
+              <Button variant="contained" sx={{ backgroundColor: "#b58900", "&:hover": { backgroundColor: "#946800" } }}>Subscribe</Button>
+            </Box>
+          </Grid>
+
+          {/* Rate Us Section */}
+          <Grid item xs={12} sm={12} lg={4}>
+            <Typography variant="overline" sx={{ mb: 2, color: "#000" }}>Rate Us</Typography>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Rating
+                name="rate-us"
+                value={ratingValue}
+                onChange={(event, newValue) => setRatingValue(newValue)}
+                sx={{ color: "#FFD700" }}
+              />
+              <Button variant="contained" size="small" onClick={handleRateUs} sx={{ ml: 1, bgcolor: "#FFD700", color: "#000", "&:hover": { bgcolor: "#FFC107" } }}>Submit</Button>
+            </Box>
+          </Grid>
         </Grid>
 
-        {/* App Links */}
-        <Grid item xs={6} sm={3} lg={2}>
-          <Typography variant="overline" color="text.secondary" sx={{ mb: 2 }}>App</Typography>
-          <Box>
-            {appPages.map((page) => (
-              <Typography
-                key={page}
-                component="a"
-                href={`/${page}`}
-                sx={{
-                  display: 'block',
-                  color: 'text.primary',
-                  textDecoration: 'none',
-                  mb: 1,
-                  '&:hover': { color: 'primary.main' }
-                }}
-              >
-                {page}
-              </Typography>
-            ))}
-          </Box>
-        </Grid>
+        <Divider sx={{ my: 4, borderColor: "grey.600" }} />
 
-        {/* Resources Links */}
-        <Grid item xs={6} sm={3} lg={2}>
-          <Typography variant="overline" color="text.secondary" sx={{ mb: 2 }}>Resources</Typography>
-          <Box>
-            {resourcesPages.map((page) => (
-              <Typography
-                key={page}
-                component="a"
-                href={`/${page}`}
-                sx={{
-                  display: 'block',
-                  color: 'text.primary',
-                  textDecoration: 'none',
-                  mb: 1,
-                  '&:hover': { color: 'primary.main' }
-                }}
-              >
-                {page}
-              </Typography>
-            ))}
-          </Box>
-        </Grid>
+        <Typography variant="body2" sx={{ color: "#000" }} textAlign="center">
+          © {new Date().getFullYear()} All Rights Reserved by Your Company
+        </Typography>
+      </FooterContainer>
 
-        {/* Company Links */}
-        <Grid item xs={6} sm={3} lg={2}>
-          <Typography variant="overline" color="text.secondary" sx={{ mb: 2 }}>Company</Typography>
-          <Box>
-            {companyPages.map((page) => (
-              <Typography
-                key={page}
-                component="a"
-                href={`/${page}`}
-                sx={{
-                  display: 'block',
-                  color: 'text.primary',
-                  textDecoration: 'none',
-                  mb: 1,
-                  '&:hover': { color: 'primary.main' }
-                }}
-              >
-                {page}
-              </Typography>
-            ))}
-          </Box>
-        </Grid>
-
-        {/* Legal Links */}
-        <Grid item xs={6} sm={3} lg={2}>
-          <Typography variant="overline" color="text.secondary" sx={{ mb: 2 }}>Legal</Typography>
-          <Box>
-            {legalPages.map((page) => (
-              <Typography
-                key={page}
-                component="a"
-                href={`/${page}`}
-                sx={{
-                  display: 'block',
-                  color: 'text.primary',
-                  textDecoration: 'none',
-                  mb: 1,
-                  '&:hover': { color: 'primary.main' }
-                }}
-              >
-                {page}
-              </Typography>
-            ))}
-          </Box>
-        </Grid>
-
-        {/* Newsletter Subscription */}
-        <Grid item xs={12} sm={12} lg={4}>
-          <Typography variant="overline" color="text.secondary" sx={{ mb: 2 }}>Subscribe to newsletter</Typography>
-          <Box component="form" noValidate autoComplete="off">
-            <TextField
-              fullWidth
-              type="email"
-              label="Enter your email"
-              variant="outlined"
-              size="small"
-              sx={{ mb: 2 }}
-            />
-            <Button variant="contained" color="primary">Subscribe</Button>
-          </Box>
-        </Grid>
-      </Grid>
-
-      <Divider sx={{ my: 4, borderColor: 'grey.300' }} />
-
-      <Typography variant="body2" color="text.secondary" textAlign="center">
-        © Copyright 2021, All Rights Reserved by Postcraft
-      </Typography>
-    </Box>
+      {/* Modal */}
+      <Dialog open={modalOpen} onClose={handleCloseModal}>
+        <DialogTitle>Message</DialogTitle>
+        <DialogContent>
+          <Typography>{modalMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} variant="contained" sx={{ bgcolor: "#2e7d32", color: "#FFF", "&:hover": { bgcolor: "#1b4d21" } }}>OK</Button>
+        </DialogActions>
+      </Dialog>
+    </Root>
   );
-};
-
-export default Footer;
+}

@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Container, Typography, Grid, Paper, Button } from "@mui/material";
 import { UploadFile, PhotoLibrary, VideoLibrary, HelpOutline } from "@mui/icons-material";
+import FadeUpOnScroll from "../components/FadeUpOnScroll"; // ✅ Import fade
 
 const Guides = () => {
   const guides = [
@@ -34,29 +35,36 @@ const Guides = () => {
     <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
       <Container maxWidth="md">
         {/* Header */}
-        <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
-          Guides
-        </Typography>
-        <Typography variant="h6" align="center" color="text.secondary" paragraph>
-          Step-by-step tutorials to help you navigate and use Personal Media Manager effectively.
-        </Typography>
+        <FadeUpOnScroll>
+          <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
+            Guides
+          </Typography>
+        </FadeUpOnScroll>
+
+        <FadeUpOnScroll>
+          <Typography variant="h6" align="center" color="text.secondary" paragraph>
+            Step-by-step tutorials to help you navigate and use Personal Media Manager effectively.
+          </Typography>
+        </FadeUpOnScroll>
 
         {/* Guides Section */}
-        <Grid container spacing={4} sx={{ mt: 4 }}>
+        <Grid container spacing={4} sx={{ mt: 4 }} justifyContent="center">
           {guides.map((guide, index) => (
             <Grid item xs={12} sm={6} key={index}>
-              <Paper elevation={3} sx={{ p: 3, textAlign: "center" }}>
-                {guide.icon}
-                <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>
-                  {guide.title}
-                </Typography>
-                <Typography color="text.secondary" paragraph>
-                  {guide.description}
-                </Typography>
-                <Button variant="outlined" color="primary" href={guide.link}>
-                  Read Guide
-                </Button>
-              </Paper>
+              <FadeUpOnScroll>
+                <Paper elevation={3} sx={{ p: 3, textAlign: "center" }}>
+                  {guide.icon}
+                  <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>
+                    {guide.title}
+                  </Typography>
+                  <Typography color="text.secondary" paragraph>
+                    {guide.description}
+                  </Typography>
+                  <Button variant="outlined" color="primary" href={guide.link}>
+                    Read Guide
+                  </Button>
+                </Paper>
+              </FadeUpOnScroll>
             </Grid>
           ))}
         </Grid>

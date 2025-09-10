@@ -47,7 +47,7 @@ const Home = () => {
         </Box>
 
         {/* Features Section */}
-        <Grid container spacing={4}>
+        <Grid container spacing={4} justifyContent="center">
           {features.map((feature, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
               <Paper elevation={3} sx={{ p: 3, textAlign: "center" }}>

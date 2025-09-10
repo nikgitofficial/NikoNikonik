@@ -63,7 +63,7 @@ const Terms = () => {
             7. Contact
           </Typography>
           <Typography color="text.secondary" paragraph>
-            If you have any questions about these Terms and Conditions, please contact us at <strong>support@personalmediamanager.com</strong>.
+            If you have any questions about these Terms and Conditions, please contact us at <strong>nikkopacenio@gmail.com</strong>.
           </Typography>
         </Box>
       </Container>

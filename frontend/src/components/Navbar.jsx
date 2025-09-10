@@ -1,16 +1,39 @@
-import React, { useState } from "react";
-import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItemButton, ListItemText, Divider } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  IconButton,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
+  Divider,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 
 // ✅ Import local logo
-import Logo from '../assets/logo.png'; // adjust path if Navbar.jsx is in another folder
+import Logo from "../assets/logo.png"; // adjust path if Navbar.jsx is in another folder
 
 const Navbar = () => {
-  const appPages = ['PublicHome', 'Login', 'Register'];
+  const appPages = ["PublicHome", "Login", "Register"];
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [activePage, setActivePage] = useState(""); // ✅ track active link
+
+  // ✅ Set activePage from current URL when component mounts
+  useEffect(() => {
+    const currentPath = window.location.pathname.replace("/", "");
+    setActivePage(currentPath || "PublicHome"); // default to PublicHome
+  }, []);
 
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
+  };
+
+  const handleLinkClick = (page) => {
+    setActivePage(page);
   };
 
   return (
@@ -18,18 +41,16 @@ const Navbar = () => {
       {/* Sticky Navbar */}
       <AppBar
         position="fixed"
-        color="primary"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, px: { xs: 2, sm: 4, md: 6 } }}
+        sx={{
+          backgroundColor: "#1e293b", // custom dark navy
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          px: { xs: 2, sm: 4, md: 6 },
+        }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           {/* Logo */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Box
-              component="img"
-              src={Logo}
-              alt="Logo"
-              sx={{ height: 40, mr: 2 }}
-            />
+            <Box component="img" src={Logo} alt="Logo" sx={{ height: 40, mr: 2 }} />
             <Typography
               variant="h6"
               component="a"
@@ -52,13 +73,17 @@ const Navbar = () => {
                 key={page}
                 color="inherit"
                 href={`/${page}`}
+                onClick={() => handleLinkClick(page)}
                 sx={{
                   textTransform: "none",
                   fontWeight: 500,
-                  '&:hover': {
-                    backgroundColor: 'rgba(255,255,255,0.1)',
-                    borderRadius: 1,
-                  }
+                  color: "#fff",
+                  backgroundColor:
+                    activePage === page ? "#b58900" : "transparent", // ✅ stays highlighted
+                  borderRadius: 1,
+                  "&:hover": {
+                    backgroundColor: "#b58900", // ✅ highlight on hover
+                  },
                 }}
               >
                 {page}
@@ -83,8 +108,23 @@ const Navbar = () => {
         <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
           <List>
             {appPages.map((page) => (
-              <ListItemButton key={page} component="a" href={`/${page}`}>
-                <ListItemText primary={page} />
+              <ListItemButton
+                key={page}
+                component="a"
+                href={`/${page}`}
+                onClick={() => handleLinkClick(page)}
+                sx={{
+                  backgroundColor:
+                    activePage === page ? "#b58900" : "transparent", 
+                  "&:hover": {
+                    backgroundColor: "#b58900",
+                  },
+                }}
+              >
+                <ListItemText
+                  primary={page}
+                  sx={{ color: "#fff", textAlign: "center" }}
+                />
               </ListItemButton>
             ))}
           </List>

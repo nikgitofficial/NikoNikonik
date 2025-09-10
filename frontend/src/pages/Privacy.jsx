@@ -56,7 +56,7 @@ const Privacy = () => {
             6. Contact Us
           </Typography>
           <Typography color="text.secondary" paragraph>
-            If you have any questions about this Privacy Policy or how we handle your information, please contact us at <strong>support@personalmediamanager.com</strong>.
+            If you have any questions about this Privacy Policy or how we handle your information, please contact us at <strong>nikkopacenio@gmail.com</strong>.
           </Typography>
         </Box>
       </Container>

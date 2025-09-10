@@ -1,5 +1,15 @@
 import React from "react";
-import { Box, Container, Typography, Grid, Card, CardContent, CardActions, Button } from "@mui/material";
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+} from "@mui/material";
+import FadeUpOnScroll from "../components/FadeUpOnScroll";
 
 const Blog = () => {
   const blogPosts = [
@@ -30,33 +40,45 @@ const Blog = () => {
     <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
       <Container maxWidth="md">
         {/* Header */}
-        <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
-          Blog
-        </Typography>
-        <Typography variant="h6" align="center" color="text.secondary" paragraph>
-          Stay up-to-date with the latest news, tips, and tutorials from Personal Media Manager.
-        </Typography>
+        <FadeUpOnScroll>
+          <Typography
+            variant="h3"
+            align="center"
+            gutterBottom
+            sx={{ fontWeight: "bold" }}
+          >
+            Blog
+          </Typography>
+        </FadeUpOnScroll>
+
+        <FadeUpOnScroll>
+          <Typography variant="h6" align="center" color="text.secondary" paragraph>
+            Stay up-to-date with the latest news, tips, and tutorials from Personal Media Manager.
+          </Typography>
+        </FadeUpOnScroll>
 
         {/* Blog Grid */}
-        <Grid container spacing={4} sx={{ mt: 4 }}>
+        <Grid container spacing={4} sx={{ mt: 4 }} justifyContent="center">
           {blogPosts.map((post, index) => (
             <Grid item xs={12} sm={6} key={index}>
-              <Card elevation={3}>
-                <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    {post.title}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" gutterBottom>
-                    {post.date}
-                  </Typography>
-                  <Typography color="text.secondary">{post.summary}</Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small" color="primary" href={post.link}>
-                    Read More
-                  </Button>
-                </CardActions>
-              </Card>
+              <FadeUpOnScroll>
+                <Card elevation={3}>
+                  <CardContent>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      {post.title}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" gutterBottom>
+                      {post.date}
+                    </Typography>
+                    <Typography color="text.secondary">{post.summary}</Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button size="small" color="primary" href={post.link}>
+                      Read More
+                    </Button>
+                  </CardActions>
+                </Card>
+              </FadeUpOnScroll>
             </Grid>
           ))}
         </Grid>
