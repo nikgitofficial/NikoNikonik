@@ -1,8 +1,9 @@
 import React from "react";
 import { Box, Container, Typography, Grid, Paper, Button } from "@mui/material";
 import { UploadFile, PhotoLibrary, VideoLibrary, Preview } from "@mui/icons-material";
+import FadeUpOnScroll from "../components/FadeUpOnScroll"; // ✅ import fade-up wrapper
 
-const Home = () => {
+const PublicHome = () => {
   const features = [
     {
       icon: <UploadFile sx={{ fontSize: 50, color: "#3f51b5" }} />,
@@ -34,34 +35,38 @@ const Home = () => {
     <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
       <Container maxWidth="lg">
         {/* Hero Section */}
-        <Box sx={{ textAlign: "center", mb: 6 }}>
-          <Typography variant="h2" sx={{ fontWeight: "bold", mb: 2 }}>
-            Welcome to Personal Media Manager
-          </Typography>
-          <Typography variant="h6" color="text.secondary" paragraph>
-            Upload, organize, and manage your media files securely and efficiently.
-          </Typography>
-          <Button variant="contained" color="primary" size="large" href="/dashboard">
-            Go to Dashboard
-          </Button>
-        </Box>
+        <FadeUpOnScroll>
+          <Box sx={{ textAlign: "center", mb: 6 }}>
+            <Typography variant="h2" sx={{ fontWeight: "bold", mb: 2 }}>
+              Welcome to Personal Media Manager
+            </Typography>
+            <Typography variant="h6" color="text.secondary" paragraph>
+              Upload, organize, and manage your media files securely and efficiently.
+            </Typography>
+            <Button variant="contained" color="primary" size="large" href="/dashboard">
+              Go to Dashboard
+            </Button>
+          </Box>
+        </FadeUpOnScroll>
 
         {/* Features Section */}
         <Grid container spacing={4} justifyContent="center">
           {features.map((feature, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
-              <Paper elevation={3} sx={{ p: 3, textAlign: "center" }}>
-                {feature.icon}
-                <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>
-                  {feature.title}
-                </Typography>
-                <Typography color="text.secondary" paragraph>
-                  {feature.description}
-                </Typography>
-                <Button variant="outlined" color="primary" href={feature.link}>
-                  Explore
-                </Button>
-              </Paper>
+              <FadeUpOnScroll>
+                <Paper elevation={3} sx={{ p: 3, textAlign: "center" }}>
+                  {feature.icon}
+                  <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>
+                    {feature.title}
+                  </Typography>
+                  <Typography color="text.secondary" paragraph>
+                    {feature.description}
+                  </Typography>
+                  <Button variant="outlined" color="primary" href={feature.link}>
+                    Explore
+                  </Button>
+                </Paper>
+              </FadeUpOnScroll>
             </Grid>
           ))}
         </Grid>
@@ -70,4 +75,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default PublicHome;
