@@ -45,25 +45,33 @@ const AdminHomePage = () => {
     Messages: "/contact", // ✅ backend contact route
   };
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await axios.get("/admin/stats");
-        // add totalMessages from backend later
-        const messagesRes = await axios.get("/contact");
-        setStats({
-          ...res.data,
-          totalMessages: messagesRes.data.length || 0,
-        });
-      } catch (err) {
-        console.error("❌ Failed to fetch stats", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchStats = async () => {
+    try {
+      const res = await axios.get("/admin/stats");
+      const messagesRes = await axios.get("/contact");
 
-    fetchStats();
-  }, []);
+      // ✅ Only update stats if data exists
+      setStats(prev => ({
+        totalUsers: res?.data?.totalUsers ?? prev.totalUsers,
+        totalImages: res?.data?.totalImages ?? prev.totalImages,
+        totalVideos: res?.data?.totalVideos ?? prev.totalVideos,
+        totalMedia: res?.data?.totalMedia ?? prev.totalMedia,
+        totalMessages: Array.isArray(messagesRes?.data)
+          ? messagesRes.data.length
+          : prev.totalMessages,
+      }));
+    } catch (err) {
+      console.error("❌ Failed to fetch stats", err);
+      // ❌ Do not reset stats on error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchStats();
+}, []);
+
 
   // ✅ Fetch detailed list when clicking card
   const handleOpen = async (type) => {
