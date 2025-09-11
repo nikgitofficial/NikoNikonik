@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
 import { Box } from "@mui/material";
 import { AuthContext } from "./context/AuthContext";
-import Layout from "./layouts/Layout"; // ✅ new layout
+import Layout from "./layouts/Layout"; 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -13,7 +13,15 @@ import ImageUploader from "./pages/ImageUploader";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 
-//public page
+// ✅ admin pages  with dasboard layouts
+import AdminPage from "./pages/AdminPage";
+import AdminSettings from "./pages/AdminSettings";
+import AdminHomePage from "./pages/AdminHomePage";
+import ManageUsers from "./pages/ManageUsers";
+import Contacts  from "./pages/Contacts";
+import AdminRatings from "./pages/AdminRatings";
+
+// public pages
 import About from "./pages/About";
 import Careers from "./pages/Careers";
 import Community from "./pages/Community";
@@ -30,12 +38,18 @@ import Guides from "./pages/Guides";
 import FAQ from "./pages/FAQ";
 import Blog from "./pages/Blog";
 import Analytics from "./pages/Analytics";
-import PublicHome from "./pages/PublicHome";
-
+import WelcomePage from "./pages/WelcomePage";
 
 // ProtectedRoute
 const ProtectedRoute = ({ user, children }) => {
   if (!user) return <Navigate to="/login" replace />;
+  return children;
+};
+
+// Only allow admin users
+const AdminRoute = ({ user, children }) => {
+  if (!user) return <Navigate to="/login" replace />; // Not logged in
+  if (user.role !== "admin") return <Navigate to="/dashboard/home" replace />; // Not admin
   return children;
 };
 
@@ -51,87 +65,57 @@ const App = () => {
             {/* Public routes */}
             <Route
               path="/"
-              element={user ? <Navigate to="/dashboard/home" /> : <Navigate to="/login" />}
+              element={
+                user ? (
+                  user.role === "admin" ? (
+                    <Navigate to="/admin" />
+                  ) : (
+                    <Navigate to="/dashboard/home" />
+                  )
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
             />
             <Route
               path="/login"
-              element={!user ? <Login /> : <Navigate to="/dashboard/home" />}
+              element={
+                !user ? (
+                  <Login />
+                ) : (
+                  <Navigate to={user.role === "admin" ? "/admin" : "/dashboard/home"} />
+                )
+              }
             />
             <Route
               path="/register"
-              element={!user ? <Register /> : <Navigate to="/dashboard/home" />}
+              element={
+                !user ? (
+                  <Register />
+                ) : (
+                  <Navigate to={user.role === "admin" ? "/admin" : "/dashboard/home"} />
+                )
+              }
             />
-             <Route
-              path="/about"
-              element={!user ? <About /> : <Navigate to="/dashboard/home" />}
-            />
-            <Route
-              path="/careers"
-              element={!user ? <Careers /> : <Navigate to="/dashboard/home" />}
-            />
-             <Route
-              path="/community"
-              element={!user ? <Community /> : <Navigate to="/dashboard/home" />}
-            />
-             <Route
-              path="/contact"
-              element={!user ? <Contact /> : <Navigate to="/dashboard/home" />}
-            />
-             <Route
-              path="/privacy"
-              element={!user ? <Privacy/> : <Navigate to="/dashboard/home" />}
-            />
-            <Route
-              path="/terms"
-              element={!user ? <Terms/> : <Navigate to="/dashboard/home" />}
-            />
-             <Route
-              path="/cookiebanner"
-              element={!user ? <CookieBanner/> : <Navigate to="/dashboard/home" />}
-            />
-             <Route
-              path="/cookiesettings"
-              element={!user ? <CookieSettings/> : <Navigate to="/dashboard/home" />}
-            />
-            <Route
-              path="/security"
-              element={!user ? <Security/> : <Navigate to="/dashboard/home" />}
-            />
-             <Route
-              path="/sitemap"
-              element={!user ? <Sitemap/> : <Navigate to="/dashboard/home" />}
-            />
-            <Route
-              path="/status"
-              element={!user ? <Status/> : <Navigate to="/dashboard/home" />}
-            />
-            <Route
-              path="/docs"
-              element={!user ? <Docs/> : <Navigate to="/dashboard/home" />}
-            />
-            <Route
-              path="/guides"
-              element={!user ? <Guides/> : <Navigate to="/dashboard/home" />}
-            />
-            <Route
-              path="/faq"
-              element={!user ? <FAQ/> : <Navigate to="/dashboard/home" />}
-            />
-            <Route
-              path="/blog"
-              element={!user ? <Blog/> : <Navigate to="/dashboard/home" />}
-            />
-             <Route
-              path="/analytics"
-              element={!user ? <Analytics/> : <Navigate to="/dashboard/home" />}
-            />
-              <Route
-              path="/publichome"
-              element={!user ? <PublicHome/> : <Navigate to="/dashboard/home" />}
-            />
+            <Route path="/about" element={!user ? <About /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/careers" element={!user ? <Careers /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/community" element={!user ? <Community /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/contact" element={!user ? <Contact /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/privacy" element={!user ? <Privacy /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/terms" element={!user ? <Terms /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/cookiebanner" element={!user ? <CookieBanner /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/cookiesettings" element={!user ? <CookieSettings /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/security" element={!user ? <Security /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/sitemap" element={!user ? <Sitemap /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/status" element={!user ? <Status /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/docs" element={!user ? <Docs /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/guides" element={!user ? <Guides /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/faq" element={!user ? <FAQ /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/blog" element={!user ? <Blog /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/analytics" element={!user ? <Analytics /> : <Navigate to="/dashboard/home" />} />
+            <Route path="/welcome" element={!user ? <WelcomePage /> : <Navigate to="/dashboard/home" />} />
 
-
-            {/* Dashboard layout with nested routes */}
+            {/* Dashboard layout with nested routes (normal users only) */}
             <Route
               path="/dashboard"
               element={
@@ -146,6 +130,23 @@ const App = () => {
               <Route path="image-uploader" element={<ImageUploader />} />
               <Route path="profile-pic" element={<Profile />} />
               <Route path="settings" element={<Settings />} />
+            </Route>
+
+            {/* Admin-only route (with nested routes) */}
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute user={user}>
+                  <AdminPage />
+                </AdminRoute>
+              }
+            >
+              <Route index element={<Navigate to="home" replace />} />
+              <Route path="home" element={<AdminHomePage />} />
+              <Route path="settings" element={<AdminSettings />} />
+              <Route path="users" element={<ManageUsers />} />
+              <Route path="contacts" element={<Contacts />} />
+              <Route path="ratings" element={<AdminRatings />} />
             </Route>
 
             {/* Catch-all redirect */}

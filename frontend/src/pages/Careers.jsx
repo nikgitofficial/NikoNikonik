@@ -10,7 +10,7 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
-import FadeUpOnScroll from "../components/FadeUpOnScroll"; // ✅ Correct import
+import FadeUpOnScroll from "../components/FadeUpOnScroll";
 
 const Careers = () => {
   const positions = [
@@ -34,8 +34,15 @@ const Careers = () => {
     },
   ];
 
+  const benefits = [
+    "Flexible remote work schedule",
+    "Opportunities for growth and skill development",
+    "Collaborative and inclusive work environment",
+    "Work on cutting-edge media management technologies",
+  ];
+
   return (
-    <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
+    <Box sx={{ bgcolor: "#f9fafb", py: { xs: 6, md: 10 } }}>
       <Container maxWidth="md">
         {/* Header */}
         <FadeUpOnScroll>
@@ -50,17 +57,34 @@ const Careers = () => {
         </FadeUpOnScroll>
 
         <FadeUpOnScroll>
-          <Typography variant="h6" align="center" color="text.secondary" paragraph>
+          <Typography
+            variant="h6"
+            align="center"
+            color="text.secondary"
+            paragraph
+            sx={{ mb: { xs: 4, md: 6 } }}
+          >
             Join our growing team and help build a secure and intuitive media management platform.
           </Typography>
         </FadeUpOnScroll>
 
         {/* Open Positions */}
-        <Grid container spacing={4} sx={{ mt: 4 }} justifyContent="center">
+        <Grid container spacing={{ xs: 3, md: 4 }}>
           {positions.map((pos, index) => (
             <Grid item xs={12} key={index}>
               <FadeUpOnScroll>
-                <Paper elevation={3} sx={{ p: 3 }}>
+                <Paper
+                  elevation={6}
+                  sx={{
+                    p: 3,
+                    borderRadius: 3,
+                    transition: "transform 0.3s, box-shadow 0.3s",
+                    "&:hover": {
+                      transform: "translateY(-6px)",
+                      boxShadow: "0 10px 20px rgba(0,0,0,0.12)",
+                    },
+                  }}
+                >
                   <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                     {pos.title}
                   </Typography>
@@ -71,7 +95,15 @@ const Careers = () => {
                   <Button
                     variant="contained"
                     color="primary"
-                    sx={{ mt: 2 }}
+                    sx={{
+                      mt: 2,
+                      py: 1.5,
+                      px: 4,
+                      borderRadius: 2,
+                      textTransform: "none",
+                      fontWeight: 500,
+                      "&:hover": { backgroundColor: "#1565c0" },
+                    }}
                     href="mailto:careers@personalmediamanager.com"
                   >
                     Apply Now
@@ -83,7 +115,7 @@ const Careers = () => {
         </Grid>
 
         {/* Benefits Section */}
-        <Box sx={{ mt: 6 }}>
+        <Box sx={{ mt: { xs: 6, md: 10 } }}>
           <FadeUpOnScroll>
             <Typography
               variant="h4"
@@ -96,23 +128,22 @@ const Careers = () => {
           </FadeUpOnScroll>
 
           <FadeUpOnScroll>
-           <Box sx={{ display: "flex", justifyContent: "center" }}>
-  <List sx={{ width: "100%", maxWidth: 600 }}>
-    <ListItem sx={{ justifyContent: "center", textAlign: "center" }}>
-      <ListItemText primary="Flexible remote work schedule" />
-    </ListItem>
-    <ListItem sx={{ justifyContent: "center", textAlign: "center" }}>
-      <ListItemText primary="Opportunities for growth and skill development" />
-    </ListItem>
-    <ListItem sx={{ justifyContent: "center", textAlign: "center" }}>
-      <ListItemText primary="Collaborative and inclusive work environment" />
-    </ListItem>
-    <ListItem sx={{ justifyContent: "center", textAlign: "center" }}>
-      <ListItemText primary="Work on cutting-edge media management technologies" />
-    </ListItem>
-  </List>
-</Box>
-
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+              <List sx={{ width: "100%", maxWidth: 600 }}>
+                {benefits.map((benefit, idx) => (
+                  <ListItem
+                    key={idx}
+                    sx={{
+                      justifyContent: "center",
+                      textAlign: "center",
+                      py: 1,
+                    }}
+                  >
+                    <ListItemText primary={benefit} />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
           </FadeUpOnScroll>
         </Box>
       </Container>

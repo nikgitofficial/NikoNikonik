@@ -37,7 +37,7 @@ const Blog = () => {
   ];
 
   return (
-    <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
+    <Box sx={{ bgcolor: "#f9fafb", py: { xs: 6, md: 10 } }}>
       <Container maxWidth="md">
         {/* Header */}
         <FadeUpOnScroll>
@@ -52,19 +52,38 @@ const Blog = () => {
         </FadeUpOnScroll>
 
         <FadeUpOnScroll>
-          <Typography variant="h6" align="center" color="text.secondary" paragraph>
+          <Typography
+            variant="h6"
+            align="center"
+            color="text.secondary"
+            paragraph
+            sx={{ mb: { xs: 4, md: 6 } }}
+          >
             Stay up-to-date with the latest news, tips, and tutorials from Personal Media Manager.
           </Typography>
         </FadeUpOnScroll>
 
         {/* Blog Grid */}
-        <Grid container spacing={4} sx={{ mt: 4 }} justifyContent="center">
+        <Grid container spacing={{ xs: 3, md: 4 }} justifyContent="center">
           {blogPosts.map((post, index) => (
             <Grid item xs={12} sm={6} key={index}>
               <FadeUpOnScroll>
-                <Card elevation={3}>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                <Card
+                  elevation={6}
+                  sx={{
+                    borderRadius: 3,
+                    transition: "transform 0.3s, box-shadow 0.3s",
+                    "&:hover": {
+                      transform: "translateY(-8px)",
+                      boxShadow: "0 10px 20px rgba(0,0,0,0.12)",
+                    },
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                  }}
+                >
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
                       {post.title}
                     </Typography>
                     <Typography variant="caption" color="text.secondary" gutterBottom>
@@ -73,7 +92,17 @@ const Blog = () => {
                     <Typography color="text.secondary">{post.summary}</Typography>
                   </CardContent>
                   <CardActions>
-                    <Button size="small" color="primary" href={post.link}>
+                    <Button
+                      size="small"
+                      color="primary"
+                      href={post.link}
+                      sx={{
+                        textTransform: "none",
+                        fontWeight: 500,
+                        borderRadius: 2,
+                        "&:hover": { backgroundColor: "#e3f2fd" },
+                      }}
+                    >
                       Read More
                     </Button>
                   </CardActions>

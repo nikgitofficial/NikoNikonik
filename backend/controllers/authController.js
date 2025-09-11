@@ -23,11 +23,10 @@ export const login = async (req, res) => {
   const match = await bcrypt.compare(password, user.password);
   if (!match) return res.status(400).json({ msg: "Invalid credentials" });
 
-  const payload = { id: user._id, username: user.username };
+  const payload = { id: user._id, username: user.username, role: user.role }; // ✅ include role
   const accessToken = createAccessToken(payload);
   const refreshToken = createRefreshToken(payload);
 
-  // ✅ Send both tokens in response (not cookies)
   res.json({ accessToken, refreshToken });
 };
 
@@ -57,12 +56,12 @@ export const me = async (req, res) => {
     const user = await User.findById(req.user.id).select("-password");
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    res.json(user);
+    res.json(user); // ✅ includes role now
   } catch (err) {
-    console.error("Auth me error:", err);
     res.status(500).json({ msg: "Server error" });
   }
 };
+
 
 export const logout = (req, res) => {
   res.json({ msg: "Logged out" }); // No cookie to clear

@@ -9,7 +9,7 @@ import {
   ListItemText,
   Divider,
 } from "@mui/material";
-import FadeUpOnScroll from "../components/FadeUpOnScroll"; // ✅ import fade
+import FadeUpOnScroll from "../components/FadeUpOnScroll";
 
 const Sitemap = () => {
   const siteSections = [
@@ -54,8 +54,9 @@ const Sitemap = () => {
   ];
 
   return (
-    <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
+    <Box sx={{ bgcolor: "#f9fafb", py: { xs: 6, md: 10 } }}>
       <Container maxWidth="md">
+        {/* Header */}
         <FadeUpOnScroll>
           <Typography
             variant="h3"
@@ -68,16 +69,26 @@ const Sitemap = () => {
         </FadeUpOnScroll>
 
         <FadeUpOnScroll>
-          <Typography variant="h6" align="center" color="text.secondary" paragraph>
+          <Typography
+            variant="h6"
+            align="center"
+            color="text.secondary"
+            paragraph
+            sx={{ mb: { xs: 4, md: 6 } }}
+          >
             Navigate through all sections of Personal Media Manager with ease.
           </Typography>
         </FadeUpOnScroll>
 
-        <Grid container spacing={4} sx={{ mt: 4 }} justifyContent="center">
+        {/* Sections Grid */}
+        <Grid container spacing={{ xs: 3, md: 4 }} justifyContent="center">
           {siteSections.map((section, index) => (
             <Grid item xs={12} sm={6} key={index}>
               <FadeUpOnScroll>
-                <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: "bold", mb: 2 }}
+                >
                   {section.title}
                 </Typography>
                 <List>

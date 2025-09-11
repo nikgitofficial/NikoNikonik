@@ -4,7 +4,9 @@ import { Facebook, Twitter, LinkedIn, Instagram } from "@mui/icons-material";
 import CssBaseline from "@mui/material/CssBaseline";
 import Link from "@mui/material/Link";
 import { styled } from "@mui/material/styles";
-import Logo from "../assets/logo.png"; // adjust path
+import Logo from "../assets/logo.png";
+import axios from "../api/axios";
+
 
 const Root = styled("div")(({ theme }) => ({
   display: "flex",
@@ -35,15 +37,25 @@ export default function StickyFooter() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  const handleRateUs = () => {
-    if (ratingValue === 0) {
-      setModalMessage("Please select a rating first!");
-    } else {
-      setModalMessage(`Thanks for rating us ${ratingValue} star(s)!`);
-      setRatingValue(0);
-    }
+const handleRateUs = async () => {
+  if (ratingValue === 0) {
+    setModalMessage("Please select a rating first!");
     setModalOpen(true);
-  };
+    return;
+  }
+
+  try {
+    const res = await axios.post("/rate", { rating: ratingValue });
+    setModalMessage(res.data.msg || "🎉 Thank you for your feedback! 🌟");
+    setRatingValue(0);
+  } catch (err) {
+    console.error(err);
+    setModalMessage(err.response?.data?.msg || "Failed to submit rating. Please try again.");
+  } finally {
+    setModalOpen(true);
+  }
+};
+
 
   const handleCloseModal = () => setModalOpen(false);
 
@@ -144,10 +156,13 @@ export default function StickyFooter() {
         </Grid>
 
         <Divider sx={{ my: 4, borderColor: "grey.600" }} />
-
-        <Typography variant="body2" sx={{ color: "#000" }} textAlign="center">
-          © {new Date().getFullYear()} All Rights Reserved by Your Company
-        </Typography>
+<Typography
+  variant="body2"
+  sx={{ color: "#000" }}
+  textAlign="center"
+>
+  © {new Date().getFullYear()} All Rights Reserved by Niko MP
+</Typography>
       </FooterContainer>
 
       {/* Modal */}

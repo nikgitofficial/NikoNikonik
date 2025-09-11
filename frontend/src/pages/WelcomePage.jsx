@@ -1,62 +1,72 @@
 import React from "react";
 import { Box, Container, Typography, Grid, Paper, Button } from "@mui/material";
-import { UploadFile, PhotoLibrary, VideoLibrary, HelpOutline } from "@mui/icons-material";
+import { UploadFile, PhotoLibrary, VideoLibrary, Preview } from "@mui/icons-material";
 import FadeUpOnScroll from "../components/FadeUpOnScroll";
 
-const Guides = () => {
-  const guides = [
+const WelcomePage = () => {
+  const features = [
     {
       icon: <UploadFile sx={{ fontSize: 50, color: "#3f51b5" }} />,
       title: "Upload Media",
-      description: "Learn how to upload images, videos, and other files securely to your account.",
-      link: "/guides/upload-media",
+      description: "Easily upload images, videos, and other media securely to your account.",
+      link: "/dashboard",
     },
     {
       icon: <PhotoLibrary sx={{ fontSize: 50, color: "#4caf50" }} />,
-      title: "Organize Your Images",
-      description: "Step-by-step guide to categorize, tag, and manage your image library.",
-      link: "/guides/images",
+      title: "Organize Your Media",
+      description: "Categorize, tag, and manage your media library for quick access.",
+      link: "/dashboard",
     },
     {
       icon: <VideoLibrary sx={{ fontSize: 50, color: "#f50057" }} />,
       title: "Manage Videos",
-      description: "Learn how to upload, edit, and securely store your video content.",
-      link: "/guides/videos",
+      description: "Upload, edit, and securely store your video content in one place.",
+      link: "/dashboard",
     },
     {
-      icon: <HelpOutline sx={{ fontSize: 50, color: "#ff9800" }} />,
-      title: "Advanced Tips",
-      description: "Discover advanced tips and tricks to make the most of your media management platform.",
-      link: "/guides/advanced-tips",
+      icon: <Preview sx={{ fontSize: 50, color: "#ff9800" }} />,
+      title: "Preview Files",
+      description: "Preview images and videos before sharing or downloading them.",
+      link: "/preview",
     },
   ];
 
   return (
-    <Box sx={{ bgcolor: "#f9fafb", py: { xs: 6, md: 10 } }}>
-      <Container maxWidth="md">
-        {/* Header */}
+    <Box sx={{ bgcolor: "#f9fafb", py: { xs: 6, md: 12 } }}>
+      <Container maxWidth="lg">
+        {/* Hero Section */}
         <FadeUpOnScroll>
-          <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
-            Guides
-          </Typography>
+          <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
+            <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2 }}>
+              Welcome to Personal Media Manager
+            </Typography>
+            <Typography variant="h6" color="text.secondary" paragraph sx={{ mb: 3 }}>
+              Upload, organize, and manage your media files securely and efficiently.
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              href="/dashboard"
+              sx={{
+                py: 1.5,
+                px: 5,
+                fontWeight: 600,
+                borderRadius: 2,
+                textTransform: "none",
+                "&:hover": { transform: "scale(1.05)" },
+                transition: "all 0.3s ease",
+              }}
+            >
+              Go to Dashboard
+            </Button>
+          </Box>
         </FadeUpOnScroll>
 
-        <FadeUpOnScroll>
-          <Typography
-            variant="h6"
-            align="center"
-            color="text.secondary"
-            paragraph
-            sx={{ mb: { xs: 4, md: 6 } }}
-          >
-            Step-by-step tutorials to help you navigate and use Personal Media Manager effectively.
-          </Typography>
-        </FadeUpOnScroll>
-
-        {/* Guides Section */}
+        {/* Features Section */}
         <Grid container spacing={{ xs: 3, md: 4 }} justifyContent="center">
-          {guides.map((guide, index) => (
-            <Grid item xs={12} sm={6} key={index}>
+          {features.map((feature, index) => (
+            <Grid item xs={12} sm={6} md={3} key={index}>
               <FadeUpOnScroll>
                 <Paper
                   elevation={6}
@@ -75,24 +85,24 @@ const Guides = () => {
                     height: "100%",
                   }}
                 >
-                  <Box sx={{ mb: 2 }}>{guide.icon}</Box>
+                  <Box sx={{ mb: 2 }}>{feature.icon}</Box>
                   <Typography
                     variant="h6"
                     sx={{ mt: 2, fontWeight: "bold", textAlign: "center" }}
                   >
-                    {guide.title}
+                    {feature.title}
                   </Typography>
                   <Typography
                     color="text.secondary"
                     paragraph
                     sx={{ textAlign: "center", flexGrow: 1 }}
                   >
-                    {guide.description}
+                    {feature.description}
                   </Typography>
                   <Button
                     variant="outlined"
                     color="primary"
-                    href={guide.link}
+                    href={feature.link}
                     sx={{
                       mt: 2,
                       textTransform: "none",
@@ -100,13 +110,10 @@ const Guides = () => {
                       borderRadius: 2,
                       px: 3,
                       py: 1.2,
-                      "&:hover": {
-                        backgroundColor: "#e3f2fd",
-                        borderColor: "#1976d2",
-                      },
+                      "&:hover": { backgroundColor: "#e3f2fd", borderColor: "#1976d2" },
                     }}
                   >
-                    Read Guide
+                    Explore
                   </Button>
                 </Paper>
               </FadeUpOnScroll>
@@ -118,4 +125,4 @@ const Guides = () => {
   );
 };
 
-export default Guides;
+export default WelcomePage;

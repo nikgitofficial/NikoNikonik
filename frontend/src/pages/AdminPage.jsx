@@ -1,5 +1,5 @@
-// frontend/src/pages/Dashboard.jsx
-import React, { useContext, useRef, useState, useMemo } from "react";
+import React, { useContext, useRef, useState, useEffect, useMemo } from "react";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -10,8 +10,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  TextField,
-  InputAdornment,
   Avatar,
   Divider,
   IconButton,
@@ -22,51 +20,61 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import {
-  Home,
-  VideoLibrary,
-  PermMedia,
-  Image,
+  Dashboard as DashboardIcon,
+  People,
   Settings,
-  Search,
   Logout,
   Brightness4,
   Brightness7,
   Menu,
+  ContactMail,
 } from "@mui/icons-material";
-import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import axios from "../api/axios";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 const drawerWidth = 240;
 
-const Dashboard = () => {
-  const location = useLocation();
+const AdminPage = () => {
+  const { user, setUser, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const { logout, user, setUser } = useContext(AuthContext);
+  const location = useLocation();
+  const fileInputRef = useRef(null);
 
+  const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
+  const [adminMessage, setAdminMessage] = useState("");
+  const [fetching, setFetching] = useState(true);
+
   const theme = useMemo(
     () =>
       createTheme({
-        palette: {
-          mode: darkMode ? "dark" : "light",
-        },
+        palette: { mode: darkMode ? "dark" : "light" },
       }),
     [darkMode]
   );
 
-  const [loading, setLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
-  const fileInputRef = useRef(null);
-
-  const [mobileOpen, setMobileOpen] = useState(false);
   const muiTheme = useTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
+
+  // ✅ Fetch admin dashboard data
+  useEffect(() => {
+    const fetchAdmin = async () => {
+      try {
+        const res = await axios.get("/admin/dashboard");
+        setAdminMessage(res.data.msg);
+      } catch (err) {
+        setAdminMessage("Access denied.");
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchAdmin();
+  }, []);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -103,126 +111,99 @@ const Dashboard = () => {
 
   const drawerContent = (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <Box>
-        {/* Profile Section */}
-        <Box sx={{ textAlign: "center", mb: 3, px: 2 }}>
-          <Box sx={{ position: "relative", display: "inline-block" }}>
-            <input
-              ref={fileInputRef}
-              hidden
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
-            <IconButton onClick={() => fileInputRef.current.click()}>
-              <Avatar
-                src={user?.profilePic || ""}
-                alt="User"
-                sx={{ width: 72, height: 72, mx: "auto" }}
-              />
-              {loading && (
-                <CircularProgress
-                  size={72}
-                  sx={{
-                    position: "absolute",
-                    top: 0,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    color: "primary.main",
-                  }}
-                />
-              )}
-            </IconButton>
-          </Box>
-          <Typography variant="subtitle1" sx={{ fontWeight: "bold", mt: 1 }}>
-            {user?.username || "User"}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {user?.email}
-          </Typography>
-        </Box>
-
-        <Divider sx={{ mb: 2 }} />
-
-        {/* Search */}
-        <Box sx={{ px: 2, mb: 2 }}>
-          <TextField
-            fullWidth
-            placeholder="Search here"
-            size="small"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              ),
-            }}
+      {/* Profile */}
+      <Box sx={{ textAlign: "center", mb: 3, px: 2 }}>
+        <Box sx={{ position: "relative", display: "inline-block" }}>
+          <input
+            ref={fileInputRef}
+            hidden
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
           />
+          <IconButton onClick={() => fileInputRef.current.click()}>
+            <Avatar
+              src={user?.profilePic || ""}
+              alt="Admin"
+              sx={{ width: 72, height: 72, mx: "auto" }}
+            />
+            {loading && (
+              <CircularProgress
+                size={72}
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  color: "primary.main",
+                }}
+              />
+            )}
+          </IconButton>
         </Box>
-
-        {/* Navigation */}
-        <List>
-          <ListItemButton
-            component={Link}
-            to="/dashboard/home"
-            selected={location.pathname === "/dashboard/home"}
-          >
-            <ListItemIcon>
-              <Home />
-            </ListItemIcon>
-            <ListItemText primary="Home" />
-          </ListItemButton>
-
-          <ListItemButton
-            component={Link}
-            to="/dashboard/video-uploader"
-            selected={location.pathname === "/dashboard/video-uploader"}
-          >
-            <ListItemIcon>
-              <VideoLibrary />
-            </ListItemIcon>
-            <ListItemText primary="Video Uploader" />
-          </ListItemButton>
-
-          <ListItemButton
-            component={Link}
-            to="/dashboard/media-uploader"
-            selected={location.pathname === "/dashboard/media-uploader"}
-          >
-            <ListItemIcon>
-              <PermMedia />
-            </ListItemIcon>
-            <ListItemText primary="Media Uploader" />
-          </ListItemButton>
-
-          <ListItemButton
-            component={Link}
-            to="/dashboard/image-uploader"
-            selected={location.pathname === "/dashboard/image-uploader"}
-          >
-            <ListItemIcon>
-              <Image />
-            </ListItemIcon>
-            <ListItemText primary="Image Uploader" />
-          </ListItemButton>
-
-          <Divider sx={{ my: 2 }} />
-
-          <ListItemButton
-            component={Link}
-            to="/dashboard/settings"
-            selected={location.pathname === "/dashboard/settings"}
-          >
-            <ListItemIcon>
-              <Settings />
-            </ListItemIcon>
-            <ListItemText primary="Settings" />
-          </ListItemButton>
-        </List>
+        <Typography variant="subtitle1" sx={{ fontWeight: "bold", mt: 1 }}>
+          {user?.username || "Admin"}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {user?.email}
+        </Typography>
       </Box>
 
+      <Divider sx={{ mb: 2 }} />
+
+      {/* Navigation */}
+      <List>
+        <ListItemButton
+          selected={location.pathname === "/admin/home"}
+          onClick={() => navigate("/admin/home")}
+        >
+          <ListItemIcon>
+            <DashboardIcon />
+          </ListItemIcon>
+          <ListItemText primary="Dashboard" />
+        </ListItemButton>
+
+        <ListItemButton
+          selected={location.pathname === "/admin/users"}
+          onClick={() => navigate("/admin/users")}
+        >
+          <ListItemIcon>
+            <People />
+          </ListItemIcon>
+          <ListItemText primary="Manage Users" />
+        </ListItemButton>
+          <ListItemButton
+    selected={location.pathname === "/admin/contacts"}
+    onClick={() => navigate("/admin/contacts")}
+  >
+    <ListItemIcon>
+      <ContactMail />
+    </ListItemIcon>
+    <ListItemText primary="Contacts" />
+  </ListItemButton>
+  <ListItemButton
+  selected={location.pathname === "/admin/ratings"}
+  onClick={() => navigate("/admin/ratings")}
+>
+  <ListItemIcon>
+    <People /> {/* Or use Star icon if you prefer */}
+  </ListItemIcon>
+  <ListItemText primary="Ratings" />
+</ListItemButton>
+
+        <ListItemButton
+          selected={location.pathname === "/admin/settings"} // ✅ fixed
+          onClick={() => navigate("/admin/settings")}       // ✅ fixed
+        >
+          <ListItemIcon>
+            <Settings />
+          </ListItemIcon>
+          <ListItemText primary="Settings" />
+        </ListItemButton>
+      </List>
+
       {/* Logout */}
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ p: 2, mt: "auto" }}>
         <ListItemButton onClick={handleLogout}>
           <ListItemIcon>
             <Logout color="error" />
@@ -260,7 +241,7 @@ const Dashboard = () => {
               </IconButton>
             )}
             <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
-              Dashboard
+              Admin Dashboard
             </Typography>
 
             <IconButton
@@ -282,7 +263,7 @@ const Dashboard = () => {
               <IconButton onClick={() => fileInputRef.current.click()}>
                 <Avatar
                   src={user?.profilePic || ""}
-                  alt="User"
+                  alt="Admin"
                   sx={{ width: 36, height: 36 }}
                 />
                 {loading && (
@@ -301,15 +282,14 @@ const Dashboard = () => {
           </Toolbar>
         </AppBar>
 
+        {/* Main Layout */}
         <Box sx={{ display: "flex", flexGrow: 1, mt: 8 }}>
           {/* Drawer */}
           <Drawer
             variant={isMobile ? "temporary" : "permanent"}
             open={isMobile ? mobileOpen : true}
             onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true,
-            }}
+            ModalProps={{ keepMounted: true }}
             sx={{
               "& .MuiDrawer-paper": {
                 width: drawerWidth,
@@ -330,7 +310,7 @@ const Dashboard = () => {
               minHeight: "100vh",
             }}
           >
-            <Outlet />
+            {fetching ? <CircularProgress /> : <Outlet />} 
           </Box>
         </Box>
 
@@ -363,4 +343,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default AdminPage;

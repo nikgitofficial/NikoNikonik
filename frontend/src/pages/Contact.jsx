@@ -9,25 +9,42 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import FadeUpOnScroll from "../components/FadeUpOnScroll"; // ✅ same as Community
+import FadeUpOnScroll from "../components/FadeUpOnScroll";
+import axios from "../api/axios"; // ✅ use your axios instance
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMsg, setSnackbarMsg] = useState("");
+  const [snackbarType, setSnackbarType] = useState("success");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData); // Later replace with backend API call
-    setOpenSnackbar(true);
-    setFormData({ name: "", email: "", message: "" });
+    setLoading(true);
+
+    try {
+      const res = await axios.post("/contact", formData);
+      setSnackbarMsg(res.data.message || "Message sent successfully!");
+      setSnackbarType("success");
+      setOpenSnackbar(true);
+      setFormData({ name: "", email: "", message: "" });
+    } catch (error) {
+      console.error("❌ Failed to send message:", error);
+      setSnackbarMsg(error.response?.data?.error || "Failed to send message");
+      setSnackbarType("error");
+      setOpenSnackbar(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
+    <Box sx={{ bgcolor: "#f9fafb", py: { xs: 6, md: 10 } }}>
       <Container maxWidth="sm">
         {/* Header */}
         <FadeUpOnScroll>
@@ -47,6 +64,7 @@ const Contact = () => {
             align="center"
             color="text.secondary"
             paragraph
+            sx={{ mb: { xs: 4, md: 6 } }}
           >
             Have questions, feedback, or need support? Fill out the form below,
             and we'll get back to you promptly.
@@ -60,7 +78,7 @@ const Contact = () => {
             onSubmit={handleSubmit}
             sx={{
               mt: 4,
-              p: 4,
+              p: { xs: 3, md: 4 },
               bgcolor: "white",
               borderRadius: 3,
               boxShadow: 3,
@@ -106,9 +124,17 @@ const Contact = () => {
                   variant="contained"
                   color="primary"
                   size="large"
-                  sx={{ px: 5, py: 1.5, fontWeight: "bold", borderRadius: 2 }}
+                  disabled={loading}
+                  sx={{
+                    px: 5,
+                    py: 1.5,
+                    fontWeight: "bold",
+                    borderRadius: 2,
+                    textTransform: "none",
+                    "&:hover": { backgroundColor: "#1565c0" },
+                  }}
                 >
-                  Send Message
+                  {loading ? "Sending..." : "Send Message"}
                 </Button>
               </Grid>
             </Grid>
@@ -122,8 +148,8 @@ const Contact = () => {
           onClose={() => setOpenSnackbar(false)}
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
-          <Alert severity="success" sx={{ width: "100%" }}>
-            Your message has been sent successfully!
+          <Alert severity={snackbarType} sx={{ width: "100%" }}>
+            {snackbarMsg}
           </Alert>
         </Snackbar>
       </Container>

@@ -8,7 +8,7 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
-import FadeUpOnScroll from "../components/FadeUpOnScroll"; // ✅ Import fade
+import FadeUpOnScroll from "../components/FadeUpOnScroll";
 
 const FAQ = () => {
   const faqs = [
@@ -40,17 +40,28 @@ const FAQ = () => {
   ];
 
   return (
-    <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
+    <Box sx={{ bgcolor: "#f9fafb", py: { xs: 6, md: 10 } }}>
       <Container maxWidth="md">
         {/* Header */}
         <FadeUpOnScroll>
-          <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
+          <Typography
+            variant="h3"
+            align="center"
+            gutterBottom
+            sx={{ fontWeight: "bold" }}
+          >
             Frequently Asked Questions
           </Typography>
         </FadeUpOnScroll>
 
         <FadeUpOnScroll>
-          <Typography variant="h6" align="center" color="text.secondary" paragraph>
+          <Typography
+            variant="h6"
+            align="center"
+            color="text.secondary"
+            paragraph
+            sx={{ mb: { xs: 4, md: 6 } }}
+          >
             Find answers to common questions about using Personal Media Manager.
           </Typography>
         </FadeUpOnScroll>
@@ -59,9 +70,21 @@ const FAQ = () => {
         <Box sx={{ mt: 4 }}>
           {faqs.map((faq, index) => (
             <FadeUpOnScroll key={index}>
-              <Accordion>
+              <Accordion
+                sx={{
+                  borderRadius: 2,
+                  boxShadow: 1,
+                  mb: 2,
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    boxShadow: 3,
+                  },
+                  "&:before": { display: "none" }, // removes default divider line
+                }}
+              >
                 <AccordionSummary
-                  expandIcon={<ExpandMore />}
+                  expandIcon={<ExpandMore sx={{ color: "#1976d2" }} />}
                   aria-controls={`panel${index}-content`}
                   id={`panel${index}-header`}
                 >

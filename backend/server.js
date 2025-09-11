@@ -10,6 +10,13 @@ import mediaRoutes from "./routes/mediaRoutes.js";
 import imageRoutes from "./routes/imageRoutes.js";
 import profileRoutes from './routes/profileRoutes.js';
 
+//admin routes 
+import adminRoutes from "./routes/adminRoutes.js";
+
+//public  routes
+import contactRoutes from "./routes/contactRoutes.js";
+import ratingRoutes from "./routes/ratingRoutes.js";
+
 
 
 dotenv.config();
@@ -48,6 +55,9 @@ app.use("/api/videos", videoRoutes);
 app.use("/api/media", mediaRoutes);
 app.use("/api/media/images", imageRoutes);
 app.use('/api/profile', profileRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api", ratingRoutes);
 
 
 

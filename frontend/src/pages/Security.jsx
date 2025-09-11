@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Container, Typography, Grid, Paper } from "@mui/material";
 import { Lock, VerifiedUser, Storage } from "@mui/icons-material";
-import FadeUpOnScroll from "../components/FadeUpOnScroll"; // ✅ Added
+import FadeUpOnScroll from "../components/FadeUpOnScroll";
 
 const Security = () => {
   const securityFeatures = [
@@ -25,8 +25,16 @@ const Security = () => {
     },
   ];
 
+  const tips = [
+    "Use a strong, unique password for your account.",
+    "Enable two-factor authentication if available.",
+    "Be cautious when sharing your media links.",
+    "Log out from devices you don’t use regularly.",
+    "Report any suspicious activity immediately.",
+  ];
+
   return (
-    <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
+    <Box sx={{ bgcolor: "#f9fafb", py: { xs: 6, md: 10 } }}>
       <Container maxWidth="md">
         {/* Header */}
         <FadeUpOnScroll>
@@ -46,6 +54,7 @@ const Security = () => {
             align="center"
             color="text.secondary"
             paragraph
+            sx={{ mb: { xs: 4, md: 6 } }}
           >
             Your security is our top priority. We implement advanced measures to
             protect your data and media files.
@@ -53,21 +62,28 @@ const Security = () => {
         </FadeUpOnScroll>
 
         {/* Features Section */}
-        <Grid container spacing={4} sx={{ mt: 4 }} justifyContent="center">
+        <Grid container spacing={{ xs: 3, md: 4 }} justifyContent="center">
           {securityFeatures.map((feature, index) => (
             <Grid item xs={12} sm={4} key={index}>
               <FadeUpOnScroll>
-                <Paper elevation={3} sx={{ p: 3, textAlign: "center" }}>
+                <Paper
+                  elevation={6}
+                  sx={{
+                    p: 3,
+                    textAlign: "center",
+                    borderRadius: 3,
+                    transition: "transform 0.3s, box-shadow 0.3s",
+                    "&:hover": {
+                      transform: "translateY(-6px)",
+                      boxShadow: "0 10px 20px rgba(0,0,0,0.12)",
+                    },
+                  }}
+                >
                   {feature.icon}
-                  <Typography
-                    variant="h6"
-                    sx={{ mt: 2, fontWeight: "bold" }}
-                  >
+                  <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>
                     {feature.title}
                   </Typography>
-                  <Typography color="text.secondary">
-                    {feature.description}
-                  </Typography>
+                  <Typography color="text.secondary">{feature.description}</Typography>
                 </Paper>
               </FadeUpOnScroll>
             </Grid>
@@ -76,23 +92,19 @@ const Security = () => {
 
         {/* User Tips */}
         <FadeUpOnScroll>
-  <Box sx={{ mt: 6, textAlign: "center" }}>
-    <Typography
-      variant="h5"
-      sx={{ fontWeight: "bold", mb: 2 }}
-    >
-      Tips to Keep Your Account Safe
-    </Typography>
-    <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
-      <li>Use a strong, unique password for your account.</li>
-      <li>Enable two-factor authentication if available.</li>
-      <li>Be cautious when sharing your media links.</li>
-      <li>Log out from devices you don’t use regularly.</li>
-      <li>Report any suspicious activity immediately.</li>
-    </Box>
-  </Box>
-</FadeUpOnScroll>
-
+          <Box sx={{ mt: { xs: 6, md: 10 }, textAlign: "center" }}>
+            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
+              Tips to Keep Your Account Safe
+            </Typography>
+            <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
+              {tips.map((tip, idx) => (
+                <li key={idx} style={{ marginBottom: "0.5rem" }}>
+                  {tip}
+                </li>
+              ))}
+            </Box>
+          </Box>
+        </FadeUpOnScroll>
       </Container>
     </Box>
   );

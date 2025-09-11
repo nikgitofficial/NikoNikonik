@@ -16,6 +16,15 @@ const Layout = () => {
     "/dashboard/media-uploader",
     "/dashboard/image-uploader",
     "/dashboard/settings",
+    "/login",
+    "/register",
+    "/admin",
+    "/admin/settings",
+    "/admin/home",
+    "/admin/users",
+    "/admin/contacts",
+    "/admin/ratings",
+    
    
   ];
 
@@ -26,6 +35,15 @@ const Layout = () => {
     "/dashboard/media-uploader",
     "/dashboard/image-uploader",
     "/dashboard/settings",
+    "/login",
+    "/register",
+    "/admin",
+    "/admin/settings",
+    "/admin/home",
+    "/admin/users",
+    "/admin/contacts",
+    "/admin/ratings",
+   
     
     
     

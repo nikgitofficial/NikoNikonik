@@ -8,7 +8,7 @@ import {
   Button,
 } from "@mui/material";
 import { Description, VideoLibrary, Image } from "@mui/icons-material";
-import FadeUpOnScroll from "../components/FadeUpOnScroll"; // ✅ fade import
+import FadeUpOnScroll from "../components/FadeUpOnScroll";
 
 const Docs = () => {
   const docSections = [
@@ -43,7 +43,7 @@ const Docs = () => {
   ];
 
   return (
-    <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
+    <Box sx={{ bgcolor: "#f9fafb", py: { xs: 6, md: 10 } }}>
       <Container maxWidth="md">
         {/* Header */}
         <FadeUpOnScroll>
@@ -63,6 +63,7 @@ const Docs = () => {
             align="center"
             color="text.secondary"
             paragraph
+            sx={{ mb: { xs: 4, md: 6 } }}
           >
             Access guides, tutorials, and detailed instructions to make the most
             of Personal Media Manager.
@@ -70,22 +71,58 @@ const Docs = () => {
         </FadeUpOnScroll>
 
         {/* Doc Sections */}
-        <Grid container spacing={4} sx={{ mt: 4 }} justifyContent="center">
+        <Grid container spacing={{ xs: 3, md: 4 }} justifyContent="center">
           {docSections.map((doc, index) => (
             <Grid item xs={12} sm={6} key={index}>
               <FadeUpOnScroll>
-                <Paper elevation={3} sx={{ p: 3, textAlign: "center" }}>
-                  {doc.icon}
+                <Paper
+                  elevation={6}
+                  sx={{
+                    p: 4,
+                    textAlign: "center",
+                    borderRadius: 3,
+                    transition: "transform 0.3s, box-shadow 0.3s",
+                    "&:hover": {
+                      transform: "translateY(-8px)",
+                      boxShadow: "0 10px 20px rgba(0,0,0,0.12)",
+                    },
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <Box sx={{ mb: 2 }}>{doc.icon}</Box>
                   <Typography
                     variant="h6"
-                    sx={{ mt: 2, fontWeight: "bold" }}
+                    sx={{ mt: 2, fontWeight: "bold", textAlign: "center" }}
                   >
                     {doc.title}
                   </Typography>
-                  <Typography color="text.secondary" paragraph>
+                  <Typography
+                    color="text.secondary"
+                    paragraph
+                    sx={{ textAlign: "center", flexGrow: 1 }}
+                  >
                     {doc.description}
                   </Typography>
-                  <Button variant="outlined" color="primary" href={doc.link}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    href={doc.link}
+                    sx={{
+                      mt: 2,
+                      textTransform: "none",
+                      fontWeight: 500,
+                      borderRadius: 2,
+                      px: 3,
+                      py: 1.2,
+                      "&:hover": {
+                        backgroundColor: "#e3f2fd",
+                        borderColor: "#1976d2",
+                      },
+                    }}
+                  >
                     Read More
                   </Button>
                 </Paper>
