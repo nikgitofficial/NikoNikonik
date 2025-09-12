@@ -7,7 +7,6 @@ import { styled } from "@mui/material/styles";
 import Logo from "../assets/logo.png";
 import axios from "../api/axios";
 
-
 const Root = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -36,26 +35,48 @@ export default function StickyFooter() {
   const [ratingValue, setRatingValue] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [subscriberEmail, setSubscriberEmail] = useState("");
+  const [subLoading, setSubLoading] = useState(false);
 
-const handleRateUs = async () => {
-  if (ratingValue === 0) {
-    setModalMessage("Please select a rating first!");
-    setModalOpen(true);
-    return;
-  }
+  const handleRateUs = async () => {
+    if (ratingValue === 0) {
+      setModalMessage("Please select a rating first!");
+      setModalOpen(true);
+      return;
+    }
+    try {
+      const res = await axios.post("/rate", { rating: ratingValue });
+      setModalMessage(res.data.msg || "🎉 Thank you for your feedback! 🌟");
+      setRatingValue(0);
+    } catch (err) {
+      console.error(err);
+      setModalMessage(err.response?.data?.msg || "Failed to submit rating. Please try again.");
+    } finally {
+      setModalOpen(true);
+    }
+  };
 
-  try {
-    const res = await axios.post("/rate", { rating: ratingValue });
-    setModalMessage(res.data.msg || "🎉 Thank you for your feedback! 🌟");
-    setRatingValue(0);
-  } catch (err) {
-    console.error(err);
-    setModalMessage(err.response?.data?.msg || "Failed to submit rating. Please try again.");
-  } finally {
-    setModalOpen(true);
-  }
-};
-
+  // NEW: Handle subscription
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!subscriberEmail) {
+      setModalMessage("Please enter an email!");
+      setModalOpen(true);
+      return;
+    }
+    setSubLoading(true);
+    try {
+      const res = await axios.post("/subscription", { email: subscriberEmail });
+      setModalMessage(res.data.msg || "Subscribed successfully!");
+      setSubscriberEmail("");
+    } catch (err) {
+      console.error(err);
+      setModalMessage(err.response?.data?.msg || "Subscription failed. Try again.");
+    } finally {
+      setSubLoading(false);
+      setModalOpen(true);
+    }
+  };
 
   const handleCloseModal = () => setModalOpen(false);
 
@@ -116,7 +137,7 @@ const handleRateUs = async () => {
             </Box>
           </Grid>
 
-          {/* Links Columns (App, Resources, Company, Legal) */}
+          {/* Links Columns */}
           {[{title:"App",links:appPages},{title:"Resources",links:resourcesPages},{title:"Company",links:companyPages},{title:"Legal",links:legalPages}].map((col,idx)=>(
             <Grid key={idx} item xs={6} sm={3} lg={2}>
               <Typography variant="overline" sx={{ mb: 2, color: "#000" }}>{col.title}</Typography>
@@ -127,16 +148,25 @@ const handleRateUs = async () => {
           {/* Newsletter */}
           <Grid item xs={12} sm={12} lg={4}>
             <Typography variant="overline" sx={{ mb: 2, color: "#000" }}>Subscribe to newsletter</Typography>
-            <Box component="form" noValidate autoComplete="off">
+            <Box component="form" noValidate autoComplete="off" onSubmit={handleSubscribe}>
               <TextField
                 fullWidth
                 type="email"
                 label="Enter your email"
                 variant="outlined"
                 size="small"
+                value={subscriberEmail}
+                onChange={(e) => setSubscriberEmail(e.target.value)}
                 sx={{ mb:2,input:{color:"#000"},label:{color:"#000"},"& .MuiOutlinedInput-root":{"& fieldset":{borderColor:"#000"},"&:hover fieldset":{borderColor:"#b58900"},"&.Mui-focused fieldset":{borderColor:"#b58900"}}}}
               />
-              <Button variant="contained" sx={{ backgroundColor: "#b58900", "&:hover": { backgroundColor: "#946800" } }}>Subscribe</Button>
+              <Button 
+                type="submit" 
+                variant="contained" 
+                sx={{ backgroundColor: "#b58900", "&:hover": { backgroundColor: "#946800" } }}
+                disabled={subLoading}
+              >
+                {subLoading ? "Subscribing..." : "Subscribe"}
+              </Button>
             </Box>
           </Grid>
 
@@ -156,13 +186,13 @@ const handleRateUs = async () => {
         </Grid>
 
         <Divider sx={{ my: 4, borderColor: "grey.600" }} />
-<Typography
-  variant="body2"
-  sx={{ color: "#000" }}
-  textAlign="center"
->
-  © {new Date().getFullYear()} All Rights Reserved by Niko MP
-</Typography>
+        <Typography
+          variant="body2"
+          sx={{ color: "#000" }}
+          textAlign="center"
+        >
+          © {new Date().getFullYear()} All Rights Reserved by Niko MP
+        </Typography>
       </FooterContainer>
 
       {/* Modal */}

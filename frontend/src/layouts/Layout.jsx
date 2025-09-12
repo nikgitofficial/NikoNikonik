@@ -25,7 +25,7 @@ const Layout = () => {
     "/admin/contacts",
     "/admin/ratings",
     "/forgot-password",
-    
+    "/admin/subscriptions",
    
   ];
 
@@ -45,6 +45,7 @@ const Layout = () => {
     "/admin/contacts",
     "/admin/ratings",
     "/forgot-password",
+    "/admin/subscriptions",
    
     
     

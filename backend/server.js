@@ -17,6 +17,8 @@ import adminRoutes from "./routes/adminRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import ratingRoutes from "./routes/ratingRoutes.js";
 
+//subscription
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 
 
 dotenv.config();
@@ -58,6 +60,7 @@ app.use('/api/profile', profileRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api", ratingRoutes);
+app.use("/api/subscription", subscriptionRoutes);
 
 
 

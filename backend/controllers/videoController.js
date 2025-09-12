@@ -1,26 +1,20 @@
-import cloudinary from "../utils/cloudinary.js";
+import cloudinary from "../utils/cloudinary.js"; 
 import Video from "../models/Video.js";
-import streamifier from "streamifier";
+import fs from "fs";
 
-// 📤 Upload Video
+// 📤 Upload Video (mobile + desktop safe)
 export const uploadVideo = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ msg: "No video uploaded" });
 
-    const streamUpload = (fileBuffer) => {
-      return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { resource_type: "video", folder: "user_videos_nikonikonik" },
-          (error, result) => {
-            if (result) resolve(result);
-            else reject(error);
-          }
-        );
-        streamifier.createReadStream(fileBuffer).pipe(stream);
-      });
-    };
+    // Upload directly from file path (no memory buffer!)
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "video",
+      folder: "user_videos_nikonikonik",
+    });
 
-    const result = await streamUpload(req.file.buffer);
+    // Remove temp file after upload
+    fs.unlinkSync(req.file.path);
 
     const newVideo = new Video({
       user: req.user.id,
@@ -30,7 +24,6 @@ export const uploadVideo = async (req, res) => {
     });
 
     await newVideo.save();
-
     res.status(201).json(newVideo);
   } catch (err) {
     console.error("Video upload error:", err);

@@ -18,6 +18,11 @@ import {
   CssBaseline,
   useTheme,
   useMediaQuery,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import {
   Dashboard as DashboardIcon,
@@ -46,6 +51,12 @@ const AdminPage = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const [adminMessage, setAdminMessage] = useState("");
   const [fetching, setFetching] = useState(true);
+
+  // ✅ Subscription states
+  const [subscriptionEmail, setSubscriptionEmail] = useState("");
+  const [subLoading, setSubLoading] = useState(false);
+  const [subModalOpen, setSubModalOpen] = useState(false);
+  const [subModalMessage, setSubModalMessage] = useState("");
 
   const theme = useMemo(
     () =>
@@ -108,6 +119,29 @@ const AdminPage = () => {
     logout();
     navigate("/login");
   };
+
+  // ✅ Subscription handler
+  const handleSubscribe = async () => {
+    if (!subscriptionEmail) {
+      setSubModalMessage("Please enter an email!");
+      setSubModalOpen(true);
+      return;
+    }
+    setSubLoading(true);
+    try {
+      const res = await axios.post("/subscription", { email: subscriptionEmail });
+      setSubModalMessage(res.data.msg || "Subscribed successfully!");
+      setSubscriptionEmail("");
+    } catch (err) {
+      console.error(err);
+      setSubModalMessage(err.response?.data?.msg || "Subscription failed. Try again.");
+    } finally {
+      setSubLoading(false);
+      setSubModalOpen(true);
+    }
+  };
+
+  const handleCloseSubModal = () => setSubModalOpen(false);
 
   const drawerContent = (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -172,33 +206,46 @@ const AdminPage = () => {
           </ListItemIcon>
           <ListItemText primary="Manage Users" />
         </ListItemButton>
-          <ListItemButton
-    selected={location.pathname === "/admin/contacts"}
-    onClick={() => navigate("/admin/contacts")}
-  >
-    <ListItemIcon>
-      <ContactMail />
-    </ListItemIcon>
-    <ListItemText primary="Contacts" />
-  </ListItemButton>
-  <ListItemButton
-  selected={location.pathname === "/admin/ratings"}
-  onClick={() => navigate("/admin/ratings")}
->
-  <ListItemIcon>
-    <People /> {/* Or use Star icon if you prefer */}
-  </ListItemIcon>
-  <ListItemText primary="Ratings" />
-</ListItemButton>
 
         <ListItemButton
-          selected={location.pathname === "/admin/settings"} // ✅ fixed
-          onClick={() => navigate("/admin/settings")}       // ✅ fixed
+          selected={location.pathname === "/admin/contacts"}
+          onClick={() => navigate("/admin/contacts")}
+        >
+          <ListItemIcon>
+            <ContactMail />
+          </ListItemIcon>
+          <ListItemText primary="Contacts" />
+        </ListItemButton>
+
+        <ListItemButton
+          selected={location.pathname === "/admin/ratings"}
+          onClick={() => navigate("/admin/ratings")}
+        >
+          <ListItemIcon>
+            <People />
+          </ListItemIcon>
+          <ListItemText primary="Ratings" />
+        </ListItemButton>
+
+        <ListItemButton
+          selected={location.pathname === "/admin/settings"}
+          onClick={() => navigate("/admin/settings")}
         >
           <ListItemIcon>
             <Settings />
           </ListItemIcon>
           <ListItemText primary="Settings" />
+        </ListItemButton>
+
+        {/* ✅ Subscription Menu */}
+        <ListItemButton
+          selected={location.pathname === "/admin/subscriptions"}
+          onClick={() => navigate("/admin/subscriptions")}
+        >
+          <ListItemIcon>
+            <People /> {/* Replace with another icon if needed */}
+          </ListItemIcon>
+          <ListItemText primary="Subscriptions" />
         </ListItemButton>
       </List>
 
@@ -284,7 +331,6 @@ const AdminPage = () => {
 
         {/* Main Layout */}
         <Box sx={{ display: "flex", flexGrow: 1, mt: 8 }}>
-          {/* Drawer */}
           <Drawer
             variant={isMobile ? "temporary" : "permanent"}
             open={isMobile ? mobileOpen : true}
@@ -302,15 +348,8 @@ const AdminPage = () => {
           </Drawer>
 
           {/* Main Content */}
-          <Box
-            component="main"
-            sx={{
-              flexGrow: 1,
-              p: 3,
-              minHeight: "100vh",
-            }}
-          >
-            {fetching ? <CircularProgress /> : <Outlet />} 
+          <Box component="main" sx={{ flexGrow: 1, p: 3, minHeight: "100vh" }}>
+            {fetching ? <CircularProgress /> : <Outlet />}
           </Box>
         </Box>
 
@@ -338,6 +377,19 @@ const AdminPage = () => {
           message={snackbar.message}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         />
+
+        {/* Subscription Modal */}
+        <Dialog open={subModalOpen} onClose={handleCloseSubModal}>
+          <DialogTitle>Subscription</DialogTitle>
+          <DialogContent>
+            <Typography>{subModalMessage}</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseSubModal} variant="contained">
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </ThemeProvider>
   );

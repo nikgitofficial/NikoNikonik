@@ -20,6 +20,7 @@ import AdminHomePage from "./pages/AdminHomePage";
 import ManageUsers from "./pages/ManageUsers";
 import Contacts  from "./pages/Contacts";
 import AdminRatings from "./pages/AdminRatings";
+import AdminSubscriptions from "./pages/AdminSubscriptions";
 
 // public pages
 import About from "./pages/About";
@@ -158,6 +159,7 @@ const App = () => {
               <Route path="users" element={<ManageUsers />} />
               <Route path="contacts" element={<Contacts />} />
               <Route path="ratings" element={<AdminRatings />} />
+              <Route path="subscriptions" element={<AdminSubscriptions />} /> 
             </Route>
 
             {/* Catch-all redirect */}
