@@ -18,15 +18,23 @@ import {
   IconButton,
   Divider,
   Fade,
+  TextField,
+  useTheme, // ✅ added
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import FolderIcon from "@mui/icons-material/Folder";
 import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 import ImageIcon from "@mui/icons-material/Image";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import api from "../api/axios";
 
 const Home = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   const [videos, setVideos] = useState([]);
   const [images, setImages] = useState([]);
   const [media, setMedia] = useState([]);
@@ -35,7 +43,8 @@ const Home = () => {
   const [showImages, setShowImages] = useState(false);
   const [showMedia, setShowMedia] = useState(false);
 
-  // ✅ Fetch Videos
+  const [selectedDateTime, setSelectedDateTime] = useState(new Date());
+
   const fetchVideos = async () => {
     try {
       const res = await api.get("/videos");
@@ -45,7 +54,6 @@ const Home = () => {
     }
   };
 
-  // ✅ Fetch Images
   const fetchImages = async () => {
     try {
       const res = await api.get("/media/images");
@@ -55,7 +63,6 @@ const Home = () => {
     }
   };
 
-  // ✅ Fetch Media
   const fetchMedia = async () => {
     try {
       const res = await api.get("/media");
@@ -71,7 +78,6 @@ const Home = () => {
     fetchMedia();
   }, []);
 
-  // ✅ Color themes per card
   const cardThemes = {
     media: {
       bg: "linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)",
@@ -93,7 +99,6 @@ const Home = () => {
     },
   };
 
-  // ✅ Reusable Card component with theme
   const StatCard = ({ title, count, expanded, toggleExpand, colors, icon }) => (
     <Tooltip title={`Click to view ${title.toLowerCase()} details`} arrow>
       <Card
@@ -131,7 +136,6 @@ const Home = () => {
                 {count}
               </Typography>
             </Box>
-            {/* ✅ Icon Circle */}
             <Box
               sx={{
                 width: 50,
@@ -147,7 +151,6 @@ const Home = () => {
               {icon}
             </Box>
           </Box>
-          {/* Expand Button */}
           <Box display="flex" justifyContent="flex-end" mt={1}>
             <IconButton size="small" sx={{ color: colors.iconColor }}>
               {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -157,6 +160,14 @@ const Home = () => {
       </Card>
     </Tooltip>
   );
+
+  const tableSx = {
+    background: isDark ? theme.palette.background.paper : "#fff",
+    "& .MuiTableCell-root": { color: theme.palette.text.primary },
+    "& .MuiTableRow-root:hover": { backgroundColor: isDark ? "#333" : "#f5f5f5" },
+    borderRadius: 3,
+    overflow: "hidden",
+  };
 
   return (
     <Box
@@ -168,22 +179,52 @@ const Home = () => {
         width: "100%",
       }}
     >
-      {/* Page Header */}
       <Typography
         variant="h4"
         fontWeight="bold"
         mb={4}
         textAlign="center"
-        sx={{
-          fontSize: { xs: "1.6rem", sm: "2.2rem" },
-          color: "primary.main",
-        }}
+        sx={{ fontSize: { xs: "1.6rem", sm: "2.2rem" }, color: "primary.main" }}
       >
         Dashboard Overview
       </Typography>
 
-      {/* Stats Cards Grid */}
-      <Grid container spacing={3} justifyContent="center" maxWidth="1200px" >
+      {/* ✅ Calendar Section */}
+      <Box
+        mb={4}
+        sx={{
+          width: "100%",
+          maxWidth: "400px",
+          background: isDark ? theme.palette.background.paper : "#fff",
+          borderRadius: 3,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          p: 2,
+        }}
+      >
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DateTimePicker
+            label=""
+            value={selectedDateTime}
+            onChange={(newValue) => setSelectedDateTime(newValue)}
+            disableFuture
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                fullWidth
+                variant="outlined"
+                sx={{
+                  input: { color: theme.palette.text.primary },
+                  "& .MuiInputBase-root": { color: theme.palette.text.primary },
+                  "& .MuiOutlinedInput-notchedOutline": { borderColor: isDark ? "#555" : "#ccc" },
+                }}
+              />
+            )}
+          />
+        </LocalizationProvider>
+      </Box>
+
+      {/* Stats Cards */}
+      <Grid container spacing={3} justifyContent="center" maxWidth="1200px">
         <Grid item xs={12} sm={6} md={4}>
           <StatCard
             title="Total Media"
@@ -223,10 +264,10 @@ const Home = () => {
           <Fade in={showMedia}>
             <Box>
               <Divider sx={{ mb: 2, fontWeight: "bold" }}>📂 Media Details</Divider>
-              <TableContainer component={Paper} sx={{ borderRadius: 3, overflow: "hidden" }}>
+              <TableContainer component={Paper} sx={tableSx}>
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ backgroundColor: "grey.100" }}>
+                    <TableRow sx={{ backgroundColor: isDark ? "#222" : "grey.100" }}>
                       <TableCell>Title</TableCell>
                       <TableCell>Type</TableCell>
                       <TableCell>Date Uploaded</TableCell>
@@ -238,7 +279,7 @@ const Home = () => {
                       <TableRow key={item._id} hover>
                         <TableCell>{item.title}</TableCell>
                         <TableCell>{item.type}</TableCell>
-                        <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell>{new Date(item.createdAt).toLocaleString()}</TableCell>
                         <TableCell>
                           {item.type === "video" ? (
                             <video src={item.url} width="150" controls style={{ borderRadius: 12 }} />
@@ -267,10 +308,10 @@ const Home = () => {
           <Fade in={showVideos}>
             <Box>
               <Divider sx={{ mt: 4, mb: 2, fontWeight: "bold" }}>🎬 Videos</Divider>
-              <TableContainer component={Paper} sx={{ borderRadius: 3, overflow: "hidden" }}>
+              <TableContainer component={Paper} sx={tableSx}>
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ backgroundColor: "grey.100" }}>
+                    <TableRow sx={{ backgroundColor: isDark ? "#222" : "grey.100" }}>
                       <TableCell>Title</TableCell>
                       <TableCell>Date Uploaded</TableCell>
                       <TableCell>Preview</TableCell>
@@ -280,7 +321,7 @@ const Home = () => {
                     {videos.map((video) => (
                       <TableRow key={video._id} hover>
                         <TableCell>{video.title}</TableCell>
-                        <TableCell>{new Date(video.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell>{new Date(video.createdAt).toLocaleString()}</TableCell>
                         <TableCell>
                           <video src={video.url} width="150" controls style={{ borderRadius: 12 }} />
                         </TableCell>
@@ -305,10 +346,10 @@ const Home = () => {
           <Fade in={showImages}>
             <Box>
               <Divider sx={{ mt: 4, mb: 2, fontWeight: "bold" }}>🖼️ Images</Divider>
-              <TableContainer component={Paper} sx={{ borderRadius: 3, overflow: "hidden" }}>
+              <TableContainer component={Paper} sx={tableSx}>
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ backgroundColor: "grey.100" }}>
+                    <TableRow sx={{ backgroundColor: isDark ? "#222" : "grey.100" }}>
                       <TableCell>Title</TableCell>
                       <TableCell>Date Uploaded</TableCell>
                       <TableCell>Preview</TableCell>
@@ -318,7 +359,7 @@ const Home = () => {
                     {images.map((image) => (
                       <TableRow key={image._id} hover>
                         <TableCell>{image.title}</TableCell>
-                        <TableCell>{new Date(image.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell>{new Date(image.createdAt).toLocaleString()}</TableCell>
                         <TableCell>
                           <img src={image.url} alt={image.title} width="120" style={{ borderRadius: 12 }} />
                         </TableCell>

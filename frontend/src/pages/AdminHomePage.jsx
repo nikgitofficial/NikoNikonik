@@ -3,7 +3,6 @@ import {
   Box,
   Typography,
   Card,
-  CardContent,
   CircularProgress,
   Grid,
   Dialog,
@@ -15,6 +14,7 @@ import {
   TableCell,
   TableBody,
   IconButton,
+  TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PeopleIcon from "@mui/icons-material/People";
@@ -23,6 +23,9 @@ import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import MessageIcon from "@mui/icons-material/Message";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import axios from "../api/axios";
 import React from "react";
 
@@ -50,6 +53,8 @@ const AdminHomePage = () => {
   const [selectedType, setSelectedType] = useState(null);
   const [listData, setListData] = useState([]);
   const [listLoading, setListLoading] = useState(false);
+
+  const [selectedDateTime, setSelectedDateTime] = useState(new Date()); // ✅ DateTime state
 
   const endpoints = {
     Users: "/admin/users",
@@ -137,16 +142,12 @@ const AdminHomePage = () => {
         }}
         onClick={() => handleOpen(type)}
       >
-        {icon && (
-          <Box sx={{ mb: 1, color: color }}>
-            {icon}
-          </Box>
-        )}
+        {icon && <Box sx={{ mb: 1, color }}>{icon}</Box>}
         <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold", color }}>
           {title}
         </Typography>
         {loading ? (
-          <CircularProgress size={28} sx={{ color: color }} />
+          <CircularProgress size={28} sx={{ color }} />
         ) : (
           <Typography variant="h4" fontWeight="bold" sx={{ color }}>
             {value}
@@ -174,6 +175,29 @@ const AdminHomePage = () => {
         This is your admin homepage. From here you can manage users, settings,
         and monitor system activity.
       </Typography>
+
+      {/* ✅ DateTimePicker Section */}
+      <Box
+        mb={4}
+        sx={{
+          width: "100%",
+          maxWidth: "400px",
+          background: "#fff",
+          borderRadius: 3,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          p: 2,
+        }}
+      >
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DateTimePicker
+            label="Select Date & Time"
+            value={selectedDateTime}
+            onChange={(newValue) => setSelectedDateTime(newValue)}
+            disableFuture
+            renderInput={(params) => <TextField {...params} fullWidth />}
+          />
+        </LocalizationProvider>
+      </Box>
 
       {/* Stats Grid */}
       <Grid container spacing={3} sx={{ mt: 4, maxWidth: 1200 }}>

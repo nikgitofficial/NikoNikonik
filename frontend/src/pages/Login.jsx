@@ -19,7 +19,7 @@ import axios from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
 
 // ✅ Import your local images
-import Slide1 from "../assets/slide1.jpg";
+import Slide1 from "../assets/slide5.jpg";
 import Slide2 from "../assets/slide2.jpg";
 
 // ✅ Multiple images for slideshow
@@ -100,7 +100,7 @@ const Login = () => {
 
   return (
     <>
-      {/* Fullscreen split background */}
+           {/* Fullscreen split background */}
       <Box
         sx={{
           position: "fixed",
@@ -113,25 +113,30 @@ const Login = () => {
           flexDirection: { xs: "column", md: "row" }, // ✅ Column on mobile
         }}
       >
+        {/* Left Image - hidden on mobile */}
         <Box
           sx={{
             flex: 1,
             backgroundImage: `url(${Slide1})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            minHeight: { xs: "40vh", md: "100vh" }, // ✅ smaller height on mobile
+            minHeight: "100vh",
+            display: { xs: "none", md: "block" }, // ✅ hide on mobile
           }}
         />
+
+        {/* Right Image - always visible */}
         <Box
           sx={{
             flex: 1,
             backgroundImage: `url(${Slide2})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            minHeight: { xs: "40vh", md: "100vh" },
+            minHeight: "100vh",
           }}
         />
       </Box>
+
 
       {/* Login Section */}
       <Box
