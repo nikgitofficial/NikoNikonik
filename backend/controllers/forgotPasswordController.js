@@ -17,7 +17,7 @@ export const sendOTP = async (req, res) => {
     await OTP.deleteMany({ email }); // Invalidate old OTPs
     await OTP.create({ email, otp: otpCode, expiresAt });
 
-    await sendEmail(email, "Answerly Password Reset OTP", otpCode);
+    await sendEmail(email, "Niko Nikonik Password Reset OTP", otpCode);
     res.status(200).json({ message: "OTP has been sent to your email" });
   } catch (error) {
     console.error("Error in sendOTP:", error);
