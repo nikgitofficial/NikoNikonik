@@ -1,6 +1,6 @@
 import cloudinary from "../utils/cloudinary.js";
-import streamifier from "streamifier";
-import Media from "../models/Media.js"; // ✅ new unified model
+import Media from "../models/Media.js";
+import fs from "fs";
 
 // 📤 Upload Media (image or video)
 export const uploadMedia = async (req, res) => {
@@ -9,20 +9,13 @@ export const uploadMedia = async (req, res) => {
 
     const resourceType = req.file.mimetype.startsWith("video") ? "video" : "image";
 
-    const streamUpload = (fileBuffer) => {
-      return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { resource_type: resourceType, folder: "user_media_nikonikonik" },
-          (error, result) => {
-            if (result) resolve(result);
-            else reject(error);
-          }
-        );
-        streamifier.createReadStream(fileBuffer).pipe(stream);
-      });
-    };
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: resourceType,
+      folder: "user_media_nikonikonik",
+    });
 
-    const result = await streamUpload(req.file.buffer);
+    // cleanup temp file
+    fs.unlinkSync(req.file.path);
 
     const newMedia = new Media({
       user: req.user.id,
@@ -104,5 +97,3 @@ export const downloadMedia = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
-
-

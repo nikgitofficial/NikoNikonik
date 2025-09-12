@@ -1,26 +1,19 @@
 import cloudinary from "../utils/cloudinary.js";
 import Image from "../models/Image.js";
-import streamifier from "streamifier";
+import fs from "fs";
 
 // 📤 Upload Image
 export const uploadImage = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ msg: "No image uploaded" });
 
-    const streamUpload = (fileBuffer) => {
-      return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { resource_type: "image", folder: "user_images_nikonikonik" },
-          (error, result) => {
-            if (result) resolve(result);
-            else reject(error);
-          }
-        );
-        streamifier.createReadStream(fileBuffer).pipe(stream);
-      });
-    };
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "image",
+      folder: "user_images_nikonikonik",
+    });
 
-    const result = await streamUpload(req.file.buffer);
+    // cleanup temp file
+    fs.unlinkSync(req.file.path);
 
     const newImage = new Image({
       user: req.user.id,
@@ -30,7 +23,6 @@ export const uploadImage = async (req, res) => {
     });
 
     await newImage.save();
-
     res.status(201).json(newImage);
   } catch (err) {
     console.error("Image upload error:", err);
