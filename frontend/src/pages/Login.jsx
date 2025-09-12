@@ -19,7 +19,7 @@ import axios from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
 
 // ✅ Import your local images
-import Slide1 from "../assets/slide3.jpg";
+import Slide1 from "../assets/slide1.jpg";
 import Slide2 from "../assets/slide2.jpg";
 
 // ✅ Multiple images for slideshow
@@ -84,9 +84,9 @@ const Login = () => {
 
       // ✅ Redirect based on role
       if (me.data.role === "admin") {
-        navigate("/admin"); // 🔑 Admin only → /admin
+        navigate("/admin");
       } else {
-        navigate("/dashboard/home"); // 👤 User → Dashboard
+        navigate("/dashboard/home");
       }
     } catch (err) {
       setError(err.response?.data?.msg || "Login failed");
@@ -110,6 +110,7 @@ const Login = () => {
           height: "100vh",
           zIndex: -1,
           display: "flex",
+          flexDirection: { xs: "column", md: "row" }, // ✅ Column on mobile
         }}
       >
         <Box
@@ -118,6 +119,7 @@ const Login = () => {
             backgroundImage: `url(${Slide1})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
+            minHeight: { xs: "40vh", md: "100vh" }, // ✅ smaller height on mobile
           }}
         />
         <Box
@@ -126,6 +128,7 @@ const Login = () => {
             backgroundImage: `url(${Slide2})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
+            minHeight: { xs: "40vh", md: "100vh" },
           }}
         />
       </Box>
@@ -142,10 +145,11 @@ const Login = () => {
         <Box
           sx={{
             position: "absolute",
-            left: "75%",
-            top: "40%",
+            left: { xs: "50%", md: "75%" },
+            top: { xs: "25%", md: "40%" },
             transform: "translate(-50%, -50%)",
             textAlign: "center",
+            px: 2,
           }}
         >
           <Box
@@ -155,14 +159,25 @@ const Login = () => {
               justifyContent: "center",
               mb: 1,
               gap: 1.5,
+              flexDirection: { xs: "column", sm: "row" }, // ✅ stack on small
             }}
           >
-            <Box component="img" src={Logo} alt="Logo" sx={{ height: 80, width: 80 }} />
-            <Typography variant="h4" sx={{ fontWeight: "bold", color: "darkgreen" }}>
+            <Box component="img" src={Logo} alt="Logo" sx={{ height: 60, width: 60 }} />
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: "bold",
+                color: "darkgreen",
+                fontSize: { xs: "1.3rem", md: "1.8rem" },
+              }}
+            >
               Niko Nikonik
             </Typography>
           </Box>
-          <Typography variant="h6" sx={{ fontWeight: "medium" }}>
+          <Typography
+            variant="subtitle1"
+            sx={{ fontWeight: "medium", fontSize: { xs: "0.9rem", md: "1.1rem" } }}
+          >
             Welcome Back
           </Typography>
         </Box>
@@ -172,11 +187,11 @@ const Login = () => {
           variant="contained"
           onClick={() => setOpenModal(true)}
           sx={{
-            width: 400,
+            width: { xs: "80%", sm: 300, md: 400 },
             py: 1.5,
             position: "absolute",
-            left: "75%",
-            top: "50%",
+            left: { xs: "50%", md: "75%" },
+            top: { xs: "40%", md: "50%" },
             transform: "translate(-50%, -50%)",
             backgroundColor: "#FF8C00",
             "&:hover": { backgroundColor: "#FF7000" },
@@ -192,11 +207,11 @@ const Login = () => {
           variant="outlined"
           onClick={() => navigate("/welcome")}
           sx={{
-            width: 200,
+            width: { xs: "60%", sm: 200 },
             py: 1.5,
             position: "absolute",
-            left: "75%",
-            top: "60%",
+            left: { xs: "50%", md: "75%" },
+            top: { xs: "50%", md: "60%" },
             transform: "translate(-50%, -50%)",
             borderColor: "gray",
             color: "gray",
@@ -215,17 +230,22 @@ const Login = () => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: { xs: "90%", sm: 400 }, // ✅ Responsive modal width
             bgcolor: "rgba(255, 255, 255, 0.95)",
             borderRadius: 4,
-            p: 4,
+            p: { xs: 3, sm: 4 },
             boxShadow: 24,
           }}
         >
-          <Typography variant="h4" align="center" gutterBottom>
+          <Typography variant="h5" align="center" gutterBottom>
             Welcome Back
           </Typography>
-          <Typography variant="subtitle1" align="center" gutterBottom>
+          <Typography
+            variant="subtitle2"
+            align="center"
+            gutterBottom
+            sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+          >
             Login to continue
           </Typography>
           <Divider sx={{ mb: 3 }} />
@@ -262,6 +282,18 @@ const Login = () => {
                 ),
               }}
             />
+
+            {/* ✅ Forgot Password Link inside the modal */}
+            <Typography
+              variant="body2"
+              align="right"
+              sx={{ mt: 1, cursor: "pointer" }}
+            >
+              <Link to="/forgot-password" style={{ textDecoration: "none" }}>
+                Forgot Password?
+              </Link>
+            </Typography>
+
             <Button
               type="submit"
               variant="contained"

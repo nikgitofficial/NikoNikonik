@@ -39,6 +39,7 @@ import FAQ from "./pages/FAQ";
 import Blog from "./pages/Blog";
 import Analytics from "./pages/Analytics";
 import WelcomePage from "./pages/WelcomePage";
+import ForgotPassword from "./pages/ForgotPassword";
 
 // ProtectedRoute
 const ProtectedRoute = ({ user, children }) => {
@@ -97,6 +98,16 @@ const App = () => {
                 )
               }
             />
+            <Route
+  path="/forgot-password"
+  element={
+    !user ? (
+      <ForgotPassword />
+    ) : (
+      <Navigate to={user.role === "admin" ? "/admin" : "/dashboard/home"} />
+    )
+  }
+/>
             <Route path="/about" element={!user ? <About /> : <Navigate to="/dashboard/home" />} />
             <Route path="/careers" element={!user ? <Careers /> : <Navigate to="/dashboard/home" />} />
             <Route path="/community" element={!user ? <Community /> : <Navigate to="/dashboard/home" />} />

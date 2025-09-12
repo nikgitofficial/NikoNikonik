@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -33,8 +33,8 @@ const Register = () => {
 
   const navigate = useNavigate();
 
-  // Slideshow effect like login page
-  useState(() => {
+  // ✅ Slideshow effect like login page
+  useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % REGISTER_IMAGES.length);
     }, 5000);
@@ -88,7 +88,7 @@ const Register = () => {
 
   return (
     <>
-      {/* Fullscreen split background like login */}
+      {/* ✅ Fullscreen split background */}
       <Box
         sx={{
           position: "fixed",
@@ -97,7 +97,7 @@ const Register = () => {
           width: "100vw",
           height: "100vh",
           zIndex: -1,
-          display: "flex",
+          display: { xs: "none", md: "flex" }, // Hide images on mobile
         }}
       >
         <Box
@@ -118,7 +118,7 @@ const Register = () => {
         />
       </Box>
 
-      {/* Logo + App Title above the form */}
+      {/* ✅ Content wrapper */}
       <Box
         sx={{
           position: "relative",
@@ -127,18 +127,19 @@ const Register = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          p: { xs: 2, sm: 3 },
         }}
       >
+        {/* ✅ Logo + Title */}
         <Box
           sx={{
             position: "absolute",
-            left: "75%",
-            top: "35%",
+            left: { xs: "50%", md: "75%" },
+            top: { xs: "15%", md: "35%" },
             transform: "translate(-50%, -50%)",
             textAlign: "center",
           }}
         >
-          {/* Logo + App Title */}
           <Box
             sx={{
               display: "flex",
@@ -148,95 +149,122 @@ const Register = () => {
               gap: 1.5,
             }}
           >
-            
-           
+            <Box
+              component="img"
+              src={Logo}
+              alt="Logo"
+              sx={{ height: { xs: 60, md: 80 }, width: { xs: 60, md: 80 } }}
+            />
+           <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold", color: "darkgreen", fontSize: { xs: "1.2rem", md: "1.5rem" } }}
+            >
+              Niko Nikonik
+            </Typography> 
           </Box>
-          
+          {/*<Typography variant="subtitle1" sx={{ fontWeight: "medium" }}>
+            Create Your Account
+          </Typography>*/}
         </Box>
 
-        {/* Register Form */}
-        <Paper
-          elevation={6}
-          sx={{
-            p: 4,
-            borderRadius: 3,
-            position: "absolute",
-            top: "50%",
-            left: "75%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "rgba(255,255,255,0.95)",
-          }}
+       {/* ✅ Register Form */}
+<Paper
+  elevation={6}
+  sx={{
+    p: { xs: 3, md: 4 },
+    borderRadius: 3,
+    position: "absolute",
+    top: { xs: "50%", md: "50%" },
+    left: { xs: "50%", md: "75%" },
+    transform: "translate(-50%, -50%)",
+    width: { xs: "90%", sm: 400 },
+    bgcolor: "rgba(255,255,255,0.95)",
+  }}
+>
+  {/* ✅ Create Account Title */}
+  <Typography
+    variant="h5"
+    align="center"
+    sx={{
+      fontWeight: "bold",
+      color: "darkgreen",
+      mb: 2,
+      fontSize: { xs: "1.3rem", md: "1.5rem" },
+    }}
+  >
+    Create Account
+  </Typography>
+
+  <form onSubmit={handleSubmit}>
+    <Box display="flex" flexDirection="column" gap={2}>
+      <TextField
+        name="username"
+        label="Username"
+        value={form.username}
+        onChange={handleChange}
+        fullWidth
+        required
+      />
+      <TextField
+        name="email"
+        label="Email"
+        type="email"
+        value={form.email}
+        onChange={handleChange}
+        fullWidth
+        required
+        error={!!emailError}
+        helperText={emailError}
+      />
+      <TextField
+        name="password"
+        label="Password"
+        type={showPassword ? "text" : "password"}
+        value={form.password}
+        onChange={handleChange}
+        fullWidth
+        required
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                onClick={() => setShowPassword((prev) => !prev)}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+      {form.password && (
+        <Typography variant="caption" color={passwordValid ? "green" : "error"}>
+          {passwordValid
+            ? "✅ Strong password"
+            : "❌ Password must be 8+ chars, include letters, numbers, and special characters."}
+        </Typography>
+      )}
+
+      <Button type="submit" variant="contained" size="large" fullWidth sx={{ py: 1.5 }}>
+        Register
+      </Button>
+
+      <Typography variant="body2" textAlign="center" mt={1}>
+        Already have an account?{" "}
+        <span
+          style={{ color: "#1976d2", cursor: "pointer" }}
+          onClick={() => navigate("/login")}
         >
-          <form onSubmit={handleSubmit}>
-            <Box display="flex" flexDirection="column" gap={2}>
-              <TextField
-                name="username"
-                label="Username"
-                value={form.username}
-                onChange={handleChange}
-                fullWidth
-                required
-              />
-              <TextField
-                name="email"
-                label="Email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                fullWidth
-                required
-                error={!!emailError}
-                helperText={emailError}
-              />
-              <TextField
-                name="password"
-                label="Password"
-                type={showPassword ? "text" : "password"}
-                value={form.password}
-                onChange={handleChange}
-                fullWidth
-                required
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              {form.password && (
-                <Typography variant="caption" color={passwordValid ? "green" : "error"}>
-                  {passwordValid
-                    ? "✅ Strong password"
-                    : "❌ Password must be 8+ chars, include letters, numbers, and special characters."}
-                </Typography>
-              )}
+          Login
+        </span>
+      </Typography>
+    </Box>
+  </form>
+</Paper>
 
-              <Button type="submit" variant="contained" size="large" fullWidth sx={{ py: 1.5 }}>
-                Register
-              </Button>
-
-              <Typography variant="body2" textAlign="center" mt={1}>
-                Already have an account?{" "}
-                <span
-                  style={{ color: "#1976d2", cursor: "pointer" }}
-                  onClick={() => navigate("/login")}
-                >
-                  Login
-                </span>
-              </Typography>
-            </Box>
-          </form>
-        </Paper>
       </Box>
 
-      {/* Snackbar */}
+      {/* ✅ Snackbar */}
       <Snackbar
         open={snack.open}
         autoHideDuration={3000}
